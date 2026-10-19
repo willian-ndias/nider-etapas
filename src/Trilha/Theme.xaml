@@ -17,9 +17,9 @@
     <SolidColorBrush x:Key="OnAccent" Color="#FF12171C"/>
     <SolidColorBrush x:Key="RecordBrush" Color="{StaticResource RecordColor}"/>
 
-    <SolidColorBrush x:Key="TextPrimary" Color="#FFF2F4F6"/>
-    <SolidColorBrush x:Key="TextSecondary" Color="#FFAEB4BB"/>
-    <SolidColorBrush x:Key="TextMuted" Color="#FF7E858D"/>
+    <SolidColorBrush x:Key="TextPrimary" Color="#FFEEF3F6"/>
+    <SolidColorBrush x:Key="TextSecondary" Color="#FF9AA6AF"/>
+    <SolidColorBrush x:Key="TextMuted" Color="#FF6B7680"/>
     <SolidColorBrush x:Key="Divider" Color="#22FFFFFF"/>
     <SolidColorBrush x:Key="CardFill" Color="#0FFFFFFF"/>
     <SolidColorBrush x:Key="CardHover" Color="#1AFFFFFF"/>
