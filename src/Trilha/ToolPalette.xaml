@@ -1,0 +1,63 @@
+<UserControl x:Class="Trilha.ToolPalette"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             FontFamily="{StaticResource UiFont}">
+    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+        <StackPanel x:Name="Tools" Orientation="Horizontal">
+            <RadioButton GroupName="tool" Style="{StaticResource ToolToggle}" Tag="Pen" ToolTip="Caneta">
+                <Path Data="{StaticResource IcPen}" Style="{StaticResource Icon}"/>
+            </RadioButton>
+            <RadioButton GroupName="tool" Style="{StaticResource ToolToggle}" Tag="Highlighter" ToolTip="Marca-texto">
+                <Path Data="{StaticResource IcHighlighter}" Style="{StaticResource Icon}"/>
+            </RadioButton>
+            <RadioButton GroupName="tool" Style="{StaticResource ToolToggle}" Tag="Arrow" ToolTip="Seta (Shift deixa reta)">
+                <Path Data="{StaticResource IcArrow}" Style="{StaticResource Icon}"/>
+            </RadioButton>
+            <RadioButton GroupName="tool" Style="{StaticResource ToolToggle}" Tag="Rectangle" ToolTip="Retângulo (Shift = quadrado)">
+                <Path Data="{StaticResource IcRect}" Style="{StaticResource Icon}"/>
+            </RadioButton>
+            <RadioButton GroupName="tool" Style="{StaticResource ToolToggle}" Tag="Ellipse" ToolTip="Círculo (Shift = perfeito)">
+                <Path Data="{StaticResource IcEllipse}" Style="{StaticResource Icon}"/>
+            </RadioButton>
+            <RadioButton GroupName="tool" Style="{StaticResource ToolToggle}" Tag="Text" ToolTip="Texto: clique onde quer escrever. Enter confirma, Shift+Enter quebra a linha">
+                <Path Data="{StaticResource IcText}" Style="{StaticResource Icon}"/>
+            </RadioButton>
+            <RadioButton GroupName="tool" Style="{StaticResource ToolToggle}" Tag="Number" ToolTip="Números 1, 2, 3... para mostrar a ordem">
+                <Path Data="{StaticResource IcNumber}" Style="{StaticResource Icon}"/>
+            </RadioButton>
+        </StackPanel>
+
+        <Border Width="1" Height="26" Background="{StaticResource Divider}" Margin="8,0"/>
+
+        <StackPanel x:Name="Colors" Orientation="Horizontal">
+            <RadioButton GroupName="color" Style="{StaticResource Swatch}" Background="#FF4D6A" ToolTip="Vermelho"/>
+            <RadioButton GroupName="color" Style="{StaticResource Swatch}" Background="#FF9F43" ToolTip="Laranja"/>
+            <RadioButton GroupName="color" Style="{StaticResource Swatch}" Background="#FFD43B" ToolTip="Amarelo"/>
+            <RadioButton GroupName="color" Style="{StaticResource Swatch}" Background="#2ED47A" ToolTip="Verde"/>
+            <RadioButton GroupName="color" Style="{StaticResource Swatch}" Background="#2EC5FF" ToolTip="Azul"/>
+            <RadioButton GroupName="color" Style="{StaticResource Swatch}" Background="#8B7BFF" ToolTip="Roxo"/>
+            <RadioButton GroupName="color" Style="{StaticResource Swatch}" Background="#FFFFFF" ToolTip="Branco"/>
+            <RadioButton GroupName="color" Style="{StaticResource Swatch}" Background="#1C1F2A" ToolTip="Preto"/>
+        </StackPanel>
+
+        <Border Width="1" Height="26" Background="{StaticResource Divider}" Margin="8,0"/>
+
+        <StackPanel x:Name="Sizes" Orientation="Horizontal">
+            <RadioButton GroupName="size" Style="{StaticResource SizeToggle}" Tag="6" ToolTip="Traço fino / texto pequeno"/>
+            <RadioButton GroupName="size" Style="{StaticResource SizeToggle}" Tag="10" ToolTip="Traço médio / texto médio"/>
+            <RadioButton GroupName="size" Style="{StaticResource SizeToggle}" Tag="15" ToolTip="Traço grosso / texto grande"/>
+        </StackPanel>
+
+        <Border Width="1" Height="26" Background="{StaticResource Divider}" Margin="8,0"/>
+
+        <Button Style="{StaticResource IconButton}" Click="Undo_Click" ToolTip="Desfazer (Ctrl+Z)">
+            <Path Data="{StaticResource IcUndo}" Style="{StaticResource Icon}"/>
+        </Button>
+        <Button Style="{StaticResource IconButton}" Click="Redo_Click" ToolTip="Refazer (Ctrl+Y)">
+            <Path Data="{StaticResource IcRedo}" Style="{StaticResource Icon}"/>
+        </Button>
+        <Button Style="{StaticResource IconButton}" Click="Clear_Click" ToolTip="Apagar todos os desenhos">
+            <Path Data="{StaticResource IcTrash}" Style="{StaticResource Icon}"/>
+        </Button>
+    </StackPanel>
+</UserControl>

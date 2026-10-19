@@ -1,0 +1,44 @@
+<Window x:Class="Trilha.SplashWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Nider Etapas" WindowStyle="None" AllowsTransparency="True" Background="Transparent"
+        ResizeMode="NoResize" Width="460" SizeToContent="Height" WindowStartupLocation="CenterScreen"
+        ShowInTaskbar="True" Topmost="True" FontFamily="{StaticResource UiFont}" UseLayoutRounding="True">
+    <Grid x:Name="Outer" Margin="24,18,24,34" Opacity="0">
+        <Border CornerRadius="28" Background="#01000000" Effect="{StaticResource SoftShadow}"/>
+        <Grid x:Name="Shell">
+            <Border x:Name="FrostImage"/>
+            <Border CornerRadius="28" Background="{StaticResource GlassTint}"/>
+            <Border CornerRadius="28" Opacity="0.9">
+                <Border.Background>
+                    <RadialGradientBrush Center="0.5,0" GradientOrigin="0.5,0" RadiusX="0.8" RadiusY="0.9">
+                        <GradientStop Color="#33FFFFFF" Offset="0"/>
+                        <GradientStop Color="#00FFFFFF" Offset="1"/>
+                    </RadialGradientBrush>
+                </Border.Background>
+            </Border>
+            <Border CornerRadius="28" Background="{StaticResource GlassSheen}"/>
+            <Border CornerRadius="28" BorderBrush="{StaticResource GlassStroke}" BorderThickness="1"/>
+
+            <StackPanel Margin="40,44,40,30" HorizontalAlignment="Center">
+                <!-- hexágono carregando: a logo com um traço que percorre a borda -->
+                <Grid Width="150" Height="150" HorizontalAlignment="Center">
+                    <Path Data="M75,5 L135.6,40 L135.6,110 L75,145 L14.4,110 L14.4,40 Z" Stroke="#26FFFFFF" StrokeThickness="3" StrokeLineJoin="Round"/>
+                    <Path x:Name="Tracer" Data="M75,5 L135.6,40 L135.6,110 L75,145 L14.4,110 L14.4,40 Z" StrokeThickness="3"
+                          StrokeLineJoin="Round" StrokeStartLineCap="Round" StrokeEndLineCap="Round" StrokeDashCap="Round"
+                          StrokeDashArray="22 118" Stroke="{StaticResource RecordBrush}">
+                        <Path.Effect>
+                            <DropShadowEffect Color="#FFFF3B4E" BlurRadius="12" ShadowDepth="0" Opacity="0.8"/>
+                        </Path.Effect>
+                    </Path>
+                    <Image Source="pack://application:,,,/logo.png" Width="104" Height="104" RenderOptions.BitmapScalingMode="HighQuality"/>
+                </Grid>
+                <TextBlock Text="Nider Etapas" Style="{StaticResource Title}" FontSize="30" HorizontalAlignment="Center" Margin="0,22,0,0"/>
+                <TextBlock x:Name="ByText" Foreground="{StaticResource TextSecondary}" FontSize="14" HorizontalAlignment="Center" Margin="0,4,0,0"/>
+                <ProgressBar x:Name="Bar" Style="{StaticResource GlassProgress}" Maximum="1" Width="220" Margin="0,24,0,0"/>
+                <TextBlock x:Name="LoadingText" Text="Carregando..." Foreground="{StaticResource TextMuted}" FontSize="12" HorizontalAlignment="Center" Margin="0,10,0,0"/>
+                <TextBlock x:Name="ContactText" Foreground="{StaticResource TextMuted}" FontSize="11" HorizontalAlignment="Center" Margin="0,26,0,0"/>
+            </StackPanel>
+        </Grid>
+    </Grid>
+</Window>

@@ -1,0 +1,37 @@
+NIDER ETAPAS - manuais passo a passo, direto da sua tela
+========================================================
+
+COMO INSTALAR
+1. Extraia este .zip (botão direito > Extrair tudo).
+2. Abra o NiderEtapas.exe.
+3. Se o Windows mostrar "O Windows protegeu o computador", clique em
+   "Mais informações" e depois em "Executar assim mesmo".
+   (Isso acontece com todo programa novo que ainda não tem assinatura digital.)
+4. No painel do Nider Etapas, clique em "Instalar". Pronto: ele fica no menu Iniciar
+   e, se quiser, na área de trabalho. Não precisa ser administrador.
+   Se preferir não instalar, clique em "Usar sem instalar".
+
+COMO USAR
+- Clique no botão vermelho da barrinha e use o computador normalmente.
+  Cada clique ou tecla importante vira um passo com print.
+- Lápis (ou Ctrl+Shift+D): abre a paleta de desenho SEM travar a tela.
+  A gravação pausa sozinha. "Mexer na tela" deixa você clicar no programa
+  com os desenhos por cima; "Desenhar" põe setas, quadros, textos e números.
+  O print só sai quando você aperta "Tirar print" (ou Ctrl+Shift+D de novo).
+  Cada print vira um passo. Ao fechar a paleta, a gravação volta.
+  Menu que some sozinho? Abra o menu e aperte Ctrl+Shift+D.
+- Ícone do cursor: escolhe o marcador do clique (ponto, círculo, quadrado,
+  seta, holofote ou desfoque) e a cor. Na revisão dá para trocar depois.
+- Ctrl+Shift+P: pausa e continua.
+- Quadrado: termina e abre a revisão. Lá você reordena, apaga, troca a imagem, desenha
+  em cada imagem, escreve observações e clica em "Salvar PDF".
+
+ATUALIZAR
+- Abra um NiderEtapas.exe mais novo: aparece o painel "Atualizar" e ele troca
+  a versão sem mexer nos seus atalhos.
+
+DESINSTALAR
+- Configurações > Aplicativos > Nider Etapas > Desinstalar.
+  Os PDFs que você salvou não são apagados.
+
+Se a versão antiga (Etapas) estiver instalada, ela é removida sozinha ao instalar o Nider Etapas.

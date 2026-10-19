@@ -1,0 +1,92 @@
+<Window x:Class="Trilha.SetupWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Instalar Nider Etapas" WindowStyle="None" AllowsTransparency="True" Background="Transparent"
+        ResizeMode="NoResize" Width="600" SizeToContent="Height" WindowStartupLocation="CenterScreen"
+        ShowInTaskbar="True" FontFamily="{StaticResource UiFont}" UseLayoutRounding="True">
+    <Grid Margin="24,18,24,34">
+        <Border CornerRadius="28" Background="#01000000" Effect="{StaticResource SoftShadow}"/>
+        <Grid x:Name="Shell">
+            <Border x:Name="FrostImage"/>
+            <Border CornerRadius="28" Background="{StaticResource GlassTint}"/>
+            <!-- luzes coloridas no vidro -->
+            <Border CornerRadius="28" Opacity="0.9">
+                <Border.Background>
+                    <RadialGradientBrush Center="0.15,0" GradientOrigin="0.15,0" RadiusX="0.75" RadiusY="0.9">
+                        <GradientStop Color="#33FFFFFF" Offset="0"/>
+                        <GradientStop Color="#00FFFFFF" Offset="1"/>
+                    </RadialGradientBrush>
+                </Border.Background>
+            </Border>
+            <Border CornerRadius="28" Opacity="0.9">
+                <Border.Background>
+                    <RadialGradientBrush Center="1,1" GradientOrigin="1,1" RadiusX="0.7" RadiusY="0.8">
+                        <GradientStop Color="#1AFFFFFF" Offset="0"/>
+                        <GradientStop Color="#00FFFFFF" Offset="1"/>
+                    </RadialGradientBrush>
+                </Border.Background>
+            </Border>
+            <Border CornerRadius="28" Background="{StaticResource GlassSheen}"/>
+            <Border CornerRadius="28" BorderBrush="{StaticResource GlassStroke}" BorderThickness="1"/>
+
+            <Button x:Name="CloseButton" Style="{StaticResource IconButton}" Width="36" Height="36" HorizontalAlignment="Right" VerticalAlignment="Top"
+                    Margin="0,14,14,0" Click="Close_Click" ToolTip="Fechar">
+                <Path Data="{StaticResource IcClose}" Style="{StaticResource Icon}" Width="14" Height="14" Stroke="{StaticResource TextSecondary}"/>
+            </Button>
+
+            <StackPanel Margin="44,40,44,36">
+                <!-- marca -->
+                <Image Source="pack://application:,,,/logo.png" Width="96" Height="96" HorizontalAlignment="Left" RenderOptions.BitmapScalingMode="HighQuality"/>
+                <StackPanel Orientation="Horizontal" Margin="0,22,0,0">
+                    <TextBlock x:Name="NameText" Text="Nider Etapas" Style="{StaticResource Title}" FontSize="34"/>
+                    <Border x:Name="VersionChip" CornerRadius="9" Background="#1FFFFFFF" BorderBrush="#26FFFFFF" BorderThickness="1"
+                            Padding="9,2" Margin="12,0,0,0" VerticalAlignment="Center">
+                        <TextBlock x:Name="VersionText" Text="v2.0.0" Foreground="{StaticResource TextSecondary}" FontSize="12"/>
+                    </Border>
+                </StackPanel>
+                <TextBlock x:Name="TaglineText" Style="{StaticResource Body}" FontSize="15" Margin="0,4,0,0"/>
+
+                <!-- ============ estados -->
+                <StackPanel x:Name="InstallPanel" Margin="0,30,0,0">
+                    <TextBlock x:Name="InstallMessage" Style="{StaticResource Body}" Text="Grave o que você faz na tela e transforme em um manual em PDF, com setas, círculos e textos."/>
+                    <CheckBox x:Name="DesktopSwitch" Style="{StaticResource Switch}" Content="Criar atalho na área de trabalho" IsChecked="True" Margin="0,22,0,0"/>
+                    <CheckBox x:Name="LaunchSwitch" Style="{StaticResource Switch}" Content="Abrir quando terminar" IsChecked="True" Margin="0,12,0,0"/>
+                    <Grid Margin="0,30,0,0">
+                        <Button x:Name="PortableButton" Style="{StaticResource GhostButton}" Content="Usar sem instalar" HorizontalAlignment="Left" Click="Portable_Click"/>
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                            <Button x:Name="SecondaryAction" Style="{StaticResource SecondaryButton}" Visibility="Collapsed" Margin="0,0,10,0" Click="Secondary_Click"/>
+                            <Button x:Name="PrimaryAction" Style="{StaticResource PrimaryButton}" Padding="28,12" Click="Primary_Click" MinWidth="150">
+                                <TextBlock x:Name="PrimaryText" Text="Instalar" FontSize="15"/>
+                            </Button>
+                        </StackPanel>
+                    </Grid>
+                </StackPanel>
+
+                <StackPanel x:Name="ProgressPanel" Margin="0,34,0,6" Visibility="Collapsed">
+                    <TextBlock x:Name="ProgressText" Text="Copiando arquivos..." Foreground="{StaticResource TextPrimary}" FontSize="14"/>
+                    <ProgressBar x:Name="Bar" Style="{StaticResource GlassProgress}" Maximum="1" Margin="0,14,0,0"/>
+                </StackPanel>
+
+                <StackPanel x:Name="DonePanel" Margin="0,30,0,0" Visibility="Collapsed">
+                    <StackPanel Orientation="Horizontal">
+                        <Grid Width="34" Height="34">
+                            <Ellipse Fill="#262ED47A"/>
+                            <Path Data="{StaticResource IcCheck}" Stroke="#FF2ED47A" StrokeThickness="2.6" Width="16" Height="16" Stretch="Uniform"
+                                  StrokeStartLineCap="Round" StrokeEndLineCap="Round" StrokeLineJoin="Round"/>
+                        </Grid>
+                        <TextBlock x:Name="DoneTitle" Text="Tudo pronto!" Style="{StaticResource Title}" FontSize="20" Margin="12,0,0,0" VerticalAlignment="Center"/>
+                    </StackPanel>
+                    <TextBlock x:Name="DoneMessage" Style="{StaticResource Body}" Margin="0,10,0,0"
+                               Text="O Nider Etapas está no menu Iniciar. Para gravar, é só clicar no botão vermelho da barrinha."/>
+                    <Button x:Name="DoneButton" Style="{StaticResource PrimaryButton}" HorizontalAlignment="Right" Padding="28,12" Margin="0,28,0,0" Click="Done_Click">
+                        <TextBlock x:Name="DoneButtonText" Text="Abrir o Nider Etapas" FontSize="15"/>
+                    </Button>
+                </StackPanel>
+
+                <!-- assinatura -->
+                <Border Height="1" Background="{StaticResource Divider}" Margin="0,30,0,0"/>
+                <TextBlock x:Name="CreditText" Margin="0,12,0,0" FontSize="11.5" Foreground="{StaticResource TextMuted}"/>
+            </StackPanel>
+        </Grid>
+    </Grid>
+</Window>

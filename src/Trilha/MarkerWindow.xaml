@@ -1,0 +1,70 @@
+<Window x:Class="Trilha.MarkerWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Nider Etapas" Width="980" Height="600" MinWidth="820" MinHeight="520"
+        FontFamily="{StaticResource UiFont}" UseLayoutRounding="True"
+        Background="{StaticResource WindowBackdrop}" ShowInTaskbar="False" WindowStartupLocation="CenterOwner">
+    <WindowChrome.WindowChrome>
+        <WindowChrome CaptionHeight="52" ResizeBorderThickness="6" GlassFrameThickness="0" CornerRadius="0" UseAeroCaptionButtons="False"/>
+    </WindowChrome.WindowChrome>
+    <Grid x:Name="Root">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="52"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <Grid Margin="18,0,8,0">
+            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                <Image Source="pack://application:,,,/logo.png" Width="30" Height="30" RenderOptions.BitmapScalingMode="HighQuality"/>
+                <TextBlock Text="Marcador do clique" Foreground="{StaticResource TextPrimary}" FontSize="14" FontWeight="SemiBold"
+                           Margin="12,0,0,0" VerticalAlignment="Center"/>
+                <TextBlock Text="Como cada clique aparece no print." Foreground="{StaticResource TextSecondary}"
+                           FontSize="12.5" Margin="16,0,0,0" VerticalAlignment="Center"/>
+            </StackPanel>
+            <Button Style="{StaticResource ChromeButton}" HorizontalAlignment="Right" Click="Cancel_Click">
+                <Path Data="{StaticResource IcClose}" Style="{StaticResource Icon}" Width="14" Height="14"/>
+            </Button>
+        </Grid>
+
+        <Grid Grid.Row="1" Margin="24,8,24,14">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="320"/>
+            </Grid.ColumnDefinitions>
+            <Border CornerRadius="18" Background="{StaticResource CardFill}" BorderBrush="{StaticResource CardStroke}" BorderThickness="1" Padding="12">
+                <Image x:Name="Preview" Stretch="Uniform" RenderOptions.BitmapScalingMode="HighQuality"/>
+            </Border>
+            <StackPanel Grid.Column="1" Margin="20,2,0,0">
+                <TextBlock Text="FORMATO" Style="{StaticResource Label}"/>
+                <Border Background="{StaticResource CardFill}" BorderBrush="{StaticResource CardStroke}" BorderThickness="1" CornerRadius="12" Padding="3">
+                    <WrapPanel x:Name="ShapeChips"/>
+                </Border>
+                <TextBlock Text="COR" Style="{StaticResource Label}" Margin="2,18,0,6"/>
+                <WrapPanel x:Name="ColorChips"/>
+                <TextBlock Text="CONTORNO NO BOTÃO CLICADO" Style="{StaticResource Label}" Margin="2,18,0,6"/>
+                <Border HorizontalAlignment="Left" Background="{StaticResource CardFill}" BorderBrush="{StaticResource CardStroke}" BorderThickness="1" CornerRadius="12" Padding="3">
+                    <StackPanel Orientation="Horizontal">
+                        <RadioButton x:Name="OutlineOn" GroupName="outline" Style="{StaticResource Chip}" Content="Com contorno" Checked="Option_Changed"/>
+                        <RadioButton x:Name="OutlineOff" GroupName="outline" Style="{StaticResource Chip}" Content="Sem contorno" Checked="Option_Changed"/>
+                    </StackPanel>
+                </Border>
+                <TextBlock x:Name="ShapeHint" Style="{StaticResource Body}" TextWrapping="Wrap" Margin="2,16,0,0"/>
+            </StackPanel>
+        </Grid>
+
+        <Grid Grid.Row="2" Margin="24,0,24,20">
+            <TextBlock x:Name="FooterHint" Text="As próximas gravações usam este marcador." Style="{StaticResource Body}" VerticalAlignment="Center"/>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                <Button Style="{StaticResource SecondaryButton}" Content="Cancelar" Click="Cancel_Click"/>
+                <Button x:Name="ThisButton" Style="{StaticResource SecondaryButton}" Margin="10,0,0,0" Content="Só neste passo" Click="This_Click" Visibility="Collapsed"/>
+                <Button x:Name="AllButton" Style="{StaticResource PrimaryButton}" Margin="10,0,0,0" Click="All_Click" IsDefault="True">
+                    <StackPanel Orientation="Horizontal">
+                        <Path Data="{StaticResource IcCheck}" Style="{StaticResource Icon}" Width="16" Height="16" Margin="0,0,8,0"/>
+                        <TextBlock x:Name="AllText" Text="Salvar"/>
+                    </StackPanel>
+                </Button>
+            </StackPanel>
+        </Grid>
+    </Grid>
+</Window>

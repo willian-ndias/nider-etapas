@@ -1,0 +1,77 @@
+<Window x:Class="Trilha.CropWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Nider Etapas" FontFamily="{StaticResource UiFont}" UseLayoutRounding="True"
+        Background="{StaticResource WindowBackdrop}" ShowInTaskbar="False">
+    <WindowChrome.WindowChrome>
+        <WindowChrome CaptionHeight="52" ResizeBorderThickness="6" GlassFrameThickness="0" CornerRadius="0" UseAeroCaptionButtons="False"/>
+    </WindowChrome.WindowChrome>
+    <Grid x:Name="Root">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="52"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <Grid Margin="18,0,8,0">
+            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                <Image Source="pack://application:,,,/logo.png" Width="30" Height="30" RenderOptions.BitmapScalingMode="HighQuality"/>
+                <TextBlock x:Name="WindowTitle" Text="Recortar" Foreground="{StaticResource TextPrimary}" FontSize="14" FontWeight="SemiBold"
+                           Margin="12,0,0,0" VerticalAlignment="Center"/>
+                <TextBlock Text="Recorte arrastando os cantos ou desenhando a área. Embaixo, escolha uma borda." Foreground="{StaticResource TextSecondary}"
+                           FontSize="12.5" Margin="16,0,0,0" VerticalAlignment="Center"/>
+            </StackPanel>
+            <Button Style="{StaticResource ChromeButton}" HorizontalAlignment="Right" Click="Cancel_Click">
+                <Path Data="{StaticResource IcClose}" Style="{StaticResource Icon}" Width="14" Height="14"/>
+            </Button>
+        </Grid>
+
+        <Grid Grid.Row="1" Margin="30,10,30,12">
+            <Grid x:Name="Stage" HorizontalAlignment="Center" VerticalAlignment="Center">
+                <Image x:Name="Picture" Stretch="Uniform" RenderOptions.BitmapScalingMode="HighQuality"/>
+                <Canvas x:Name="Overlay" Background="Transparent" ClipToBounds="False" Cursor="Cross"
+                        MouseLeftButtonDown="Overlay_Down" MouseMove="Overlay_Move" MouseLeftButtonUp="Overlay_Up">
+                    <Path x:Name="Shade" Fill="#A6080A0D" IsHitTestVisible="False"/>
+                    <Rectangle x:Name="BorderPreview" IsHitTestVisible="False" Visibility="Collapsed"/>
+                    <Rectangle x:Name="Frame" Stroke="White" StrokeThickness="2" IsHitTestVisible="False"/>
+                    <Rectangle x:Name="Grid1" Stroke="#66FFFFFF" StrokeThickness="1" IsHitTestVisible="False"/>
+                </Canvas>
+            </Grid>
+        </Grid>
+
+        <Grid Grid.Row="2" Margin="24,0,24,20">
+            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                <Border Background="{StaticResource CardFill}" BorderBrush="{StaticResource CardStroke}" BorderThickness="1" CornerRadius="10" Padding="12,7">
+                    <TextBlock x:Name="SizeText" Foreground="{StaticResource TextSecondary}" FontSize="12.5"/>
+                </Border>
+                <Button Style="{StaticResource GhostButton}" Margin="10,0,0,0" Click="Full_Click" Content="Usar imagem inteira"/>
+                <Border Width="1" Height="24" Background="{StaticResource Divider}" Margin="14,0"/>
+                <TextBlock Text="Borda" Foreground="{StaticResource TextSecondary}" FontSize="12.5" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                <Border Background="{StaticResource CardFill}" BorderBrush="{StaticResource CardStroke}" BorderThickness="1" CornerRadius="12" Padding="3">
+                    <StackPanel x:Name="SizeChips" Orientation="Horizontal">
+                        <RadioButton GroupName="bsize" Style="{StaticResource Chip}" Content="Sem" Tag="0" Checked="Border_Changed"/>
+                        <RadioButton GroupName="bsize" Style="{StaticResource Chip}" Content="Fina" Tag="1" Checked="Border_Changed"/>
+                        <RadioButton GroupName="bsize" Style="{StaticResource Chip}" Content="Média" Tag="2" Checked="Border_Changed"/>
+                        <RadioButton GroupName="bsize" Style="{StaticResource Chip}" Content="Grossa" Tag="3" Checked="Border_Changed"/>
+                    </StackPanel>
+                </Border>
+                <StackPanel x:Name="ColorChips" Orientation="Horizontal" Margin="10,0,0,0" VerticalAlignment="Center">
+                    <RadioButton GroupName="bcolor" Style="{StaticResource Swatch}" Background="#1D2227" ToolTip="Grafite" Checked="Border_Changed"/>
+                    <RadioButton GroupName="bcolor" Style="{StaticResource Swatch}" Background="#B4BBC4" ToolTip="Cinza" Checked="Border_Changed"/>
+                    <RadioButton GroupName="bcolor" Style="{StaticResource Swatch}" Background="#FFFFFF" ToolTip="Branco" Checked="Border_Changed"/>
+                    <RadioButton GroupName="bcolor" Style="{StaticResource Swatch}" Background="#FF4D6A" ToolTip="Vermelho" Checked="Border_Changed"/>
+                    <RadioButton GroupName="bcolor" Style="{StaticResource Swatch}" Background="#2EC5FF" ToolTip="Azul" Checked="Border_Changed"/>
+                </StackPanel>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                <Button Style="{StaticResource SecondaryButton}" Content="Cancelar" Click="Cancel_Click"/>
+                <Button Style="{StaticResource PrimaryButton}" Margin="10,0,0,0" Click="Apply_Click">
+                    <StackPanel Orientation="Horizontal">
+                        <Path Data="{StaticResource IcCrop}" Style="{StaticResource Icon}" Width="16" Height="16" Margin="0,0,8,0"/>
+                        <TextBlock Text="Aplicar"/>
+                    </StackPanel>
+                </Button>
+            </StackPanel>
+        </Grid>
+    </Grid>
+</Window>

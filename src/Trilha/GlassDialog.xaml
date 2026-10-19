@@ -1,0 +1,33 @@
+<Window x:Class="Trilha.GlassDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Nider Etapas" WindowStyle="None" AllowsTransparency="True" Background="Transparent"
+        Topmost="True" ShowInTaskbar="False" ResizeMode="NoResize" SizeToContent="Height" Width="470"
+        WindowStartupLocation="CenterScreen" FontFamily="{StaticResource UiFont}" UseLayoutRounding="True">
+    <Grid Margin="20,14,20,28">
+        <Border CornerRadius="22" Background="#01000000" Effect="{StaticResource SoftShadow}"/>
+        <Grid x:Name="Shell">
+            <Border x:Name="FrostImage"/>
+            <Border CornerRadius="22" Background="{StaticResource GlassTint}"/>
+            <Border CornerRadius="22" Background="{StaticResource GlassSheen}"/>
+            <Border CornerRadius="22" BorderBrush="{StaticResource GlassStroke}" BorderThickness="1"/>
+
+            <Grid Margin="24,22,24,20">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <Image Source="pack://application:,,,/logo.png" Width="48" Height="48" VerticalAlignment="Top" RenderOptions.BitmapScalingMode="HighQuality"/>
+                <StackPanel Grid.Column="1" Margin="16,0,0,0">
+                    <TextBlock x:Name="TitleText" Style="{StaticResource Title}" FontSize="18" TextWrapping="Wrap"/>
+                    <TextBlock x:Name="MessageText" Style="{StaticResource Body}" Margin="0,6,0,0"/>
+                </StackPanel>
+                <StackPanel x:Name="Buttons" Grid.Row="1" Grid.ColumnSpan="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,22,0,0"/>
+            </Grid>
+        </Grid>
+    </Grid>
+</Window>

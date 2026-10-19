@@ -1,0 +1,66 @@
+<Window x:Class="Trilha.ToolbarWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Nider Etapas" WindowStyle="None" AllowsTransparency="True" Background="Transparent"
+        Topmost="True" ShowInTaskbar="True" ResizeMode="NoResize" SizeToContent="WidthAndHeight"
+        FontFamily="{StaticResource UiFont}" UseLayoutRounding="True">
+
+    <Grid Margin="16,10,16,22">
+        <!-- sombra separada, para não pesar no conteúdo -->
+        <Border CornerRadius="30" Background="#01000000" Effect="{StaticResource SoftShadow}"/>
+
+        <Grid x:Name="Shell">
+            <Border x:Name="FrostImage"/>
+            <Border CornerRadius="30" Background="{StaticResource GlassTint}"/>
+            <Border CornerRadius="30" Background="{StaticResource GlassSheen}"/>
+            <Border CornerRadius="30" BorderBrush="{StaticResource GlassStroke}" BorderThickness="1"/>
+
+            <StackPanel x:Name="Bar" Orientation="Horizontal" Margin="10,10" VerticalAlignment="Center">
+
+                <Image Source="pack://application:,,,/logo.png" Width="42" Height="42" Margin="0,0,10,0" ToolTip="Nider Etapas · arraste para mover" RenderOptions.BitmapScalingMode="HighQuality"/>
+
+                <Button x:Name="RecordButton" Style="{StaticResource IconButton}" Width="42" Height="42" Click="Record_Click">
+                    <Button.ToolTip>
+                        <ToolTip x:Name="RecordTip" Content="Gravar (Ctrl+Shift+P pausa)"/>
+                    </Button.ToolTip>
+                </Button>
+
+                <StackPanel Width="128" Margin="8,0,6,0" VerticalAlignment="Center">
+                    <StackPanel Orientation="Horizontal">
+                        <Ellipse x:Name="LiveDot" Width="7" Height="7" Fill="{StaticResource RecordBrush}" Margin="0,1,7,0" Visibility="Collapsed"/>
+                        <TextBlock x:Name="TimerText" Text="00:00" Foreground="{StaticResource TextPrimary}" FontSize="16" FontWeight="SemiBold"
+                                   FontFamily="{StaticResource DisplayFont}" Typography.NumeralAlignment="Tabular"/>
+                    </StackPanel>
+                    <TextBlock x:Name="StatusText" Text="Pronto para gravar" Foreground="{StaticResource TextSecondary}" FontSize="11.5" Margin="0,1,0,0">
+                        <TextBlock.RenderTransform>
+                            <ScaleTransform x:Name="StatusScale"/>
+                        </TextBlock.RenderTransform>
+                    </TextBlock>
+                </StackPanel>
+
+                <Border Width="1" Height="26" Background="{StaticResource Divider}" Margin="4,0,6,0"/>
+
+                <Button x:Name="DrawButton" Style="{StaticResource IconButton}" Click="Draw_Click" ToolTip="Desenhar na tela sem travar: a gravação pausa até você fechar a paleta (Ctrl+Shift+D)">
+                    <Path Data="{StaticResource IcDraw}" Style="{StaticResource Icon}"/>
+                </Button>
+                <Button Style="{StaticResource IconButton}" Click="Marker_Click" ToolTip="Marcador do clique: formato e cor" Margin="2,0,0,0">
+                    <Path Data="{StaticResource IcClick}" Style="{StaticResource Icon}"/>
+                </Button>
+                <Button x:Name="StopButton" Style="{StaticResource IconButton}" Click="Stop_Click" ToolTip="Parar e revisar o manual" Margin="2,0,0,0">
+                    <Path Data="{StaticResource IcStop}" Style="{StaticResource Icon}" Fill="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}"/>
+                </Button>
+
+                <Border Width="1" Height="26" Background="{StaticResource Divider}" Margin="6,0,4,0"/>
+
+                <Button x:Name="UpdateButton" Style="{StaticResource IconButton}" Click="Update_Click" Visibility="Collapsed" ToolTip="Nova versão disponível">
+                    <Grid>
+                        <Path Data="{StaticResource IcDownload}" Style="{StaticResource Icon}" Stroke="{StaticResource AccentSolid}"/>
+                    </Grid>
+                </Button>
+                <Button Style="{StaticResource IconButton}" Width="34" Height="34" Click="Close_Click" ToolTip="Fechar">
+                    <Path Data="{StaticResource IcClose}" Style="{StaticResource Icon}" Width="15" Height="15" Stroke="{StaticResource TextSecondary}"/>
+                </Button>
+            </StackPanel>
+        </Grid>
+    </Grid>
+</Window>
