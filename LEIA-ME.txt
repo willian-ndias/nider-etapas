@@ -2,8 +2,8 @@ NIDER ETAPAS - manuais passo a passo, direto da sua tela
 ========================================================
 
 COMO INSTALAR
-1. Extraia este .zip (botão direito > Extrair tudo).
-2. Abra o NiderEtapas.exe.
+1. Baixe o instalador (nider-etapas-setup-...-windows-x64.exe) e abra.
+2. Não há .zip: é um arquivo só.
 3. Se o Windows mostrar "O Windows protegeu o computador", clique em
    "Mais informações" e depois em "Executar assim mesmo".
    (Isso acontece com todo programa novo que ainda não tem assinatura digital.)
@@ -27,8 +27,12 @@ COMO USAR
   em cada imagem, escreve observações e clica em "Salvar PDF".
 
 ATUALIZAR
-- Abra um NiderEtapas.exe mais novo: aparece o painel "Atualizar" e ele troca
-  a versão sem mexer nos seus atalhos.
+- Automático: ao abrir, o Nider Etapas avisa quando há versão nova. Clique em
+  "Atualizar agora": ele baixa sozinho e abre o painel "Atualizar".
+  (Precisa estar na 2.0.12 ou mais nova. Da 2.0.11 para trás, atualize à mão
+  uma vez, abrindo o instalador novo.)
+- Manual: abra um instalador mais novo; aparece o painel "Atualizar" e ele
+  troca a versão sem mexer nos seus atalhos.
 
 DESINSTALAR
 - Configurações > Aplicativos > Nider Etapas > Desinstalar.

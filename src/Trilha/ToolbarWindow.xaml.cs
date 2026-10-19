@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Interop;
@@ -292,23 +293,71 @@ public partial class ToolbarWindow : Window
     async void CheckForUpdates()
     {
         _update = await Update.CheckAsync();
-        if (_update != null)
+        if (_update == null) return;
+        UpdateButton.Visibility = Visibility.Visible;
+        UpdateButton.ToolTip = $"Nova versão {_update.Version} disponível. Clique para atualizar.";
+        // Pergunta logo ao abrir, mas nunca no meio de uma gravação.
+        if (!IsRecordingOrBusy()) await OfferUpdateAsync();
+    }
+
+    async void Update_Click(object sender, RoutedEventArgs e) => await OfferUpdateAsync();
+
+    bool _updating;
+
+    /// <summary>Gravando ou com passos ainda não salvos: atualizar agora fecharia o app e perderia o trabalho.</summary>
+    bool IsRecordingOrBusy() => _recorder != null || (_dirty && _steps.Count > 0);
+
+    async Task OfferUpdateAsync()
+    {
+        if (_update == null || _updating) return;
+        if (IsRecordingOrBusy())
         {
-            UpdateButton.Visibility = Visibility.Visible;
-            UpdateButton.ToolTip = $"Nova versão {_update.Version} disponível. Clique para atualizar.";
+            GlassDialog.Show(this, $"Nova versão {_update.Version} disponível",
+                "Termine a gravação e salve o PDF antes de atualizar. Depois é só clicar de novo no ícone de download.", "OK");
+            return;
+        }
+        var notes = string.IsNullOrWhiteSpace(_update.Notes) ? "" : "\n\nNovidades:\n" + _update.Notes;
+        var r = GlassDialog.Show(this, $"Nova versão {_update.Version} disponível",
+            $"Você está na versão {AppInfo.VersionText}. Quer atualizar agora? O {AppInfo.Name} baixa a versão nova e reabre sozinho." + notes,
+            "Atualizar agora", "Depois");
+        if (r != 0) return;
+
+        if (string.IsNullOrEmpty(_update.Download)) { OpenUpdatePage(); return; }
+
+        _updating = true;
+        UpdateButton.IsEnabled = false;
+        var tip = UpdateButton.ToolTip;
+        try
+        {
+            var progress = new Progress<double>(p => UpdateButton.ToolTip = $"Baixando a versão {_update.Version}... {p:P0}");
+            UpdateButton.ToolTip = $"Baixando a versão {_update.Version}...";
+            var exe = await Update.DownloadAsync(_update, progress);
+            // O instalador novo abre o painel "Atualizar", fecha esta versão e troca o programa.
+            System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(exe)
+            {
+                UseShellExecute = true,
+                WorkingDirectory = System.IO.Path.GetDirectoryName(exe)!,
+            });
+            Application.Current.Shutdown();
+        }
+        catch (Exception ex)
+        {
+            Log.Error("Update", ex);
+            _updating = false;
+            UpdateButton.IsEnabled = true;
+            UpdateButton.ToolTip = tip;
+            var again = GlassDialog.Show(this, "Não deu para baixar a atualização",
+                "Verifique a internet e tente de novo pelo ícone de download na barrinha.", "Abrir página de downloads", "Fechar");
+            if (again == 0) OpenUpdatePage();
         }
     }
 
-    void Update_Click(object sender, RoutedEventArgs e)
+    void OpenUpdatePage()
     {
-        if (_update == null) return;
-        var r = GlassDialog.Show(this, $"Nova versão {_update.Version} disponível",
-            string.IsNullOrWhiteSpace(_update.Notes) ? "Abrir a página de downloads para baixar a nova versão?" : _update.Notes,
-            "Abrir downloads", "Depois");
-        if (r != 0) return;
+        if (_update == null || string.IsNullOrEmpty(_update.Page)) return;
         try
         {
-            System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(_update.Url) { UseShellExecute = true });
+            System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(_update.Page) { UseShellExecute = true });
         }
         catch (Exception ex) { Log.Error("Update", ex); GlassDialog.Error(this, "Não consegui abrir a página de downloads."); }
     }

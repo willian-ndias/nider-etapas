@@ -21,18 +21,18 @@ jobs:
       - name: Compilar e empacotar
         shell: pwsh
         run: |
-          $tag = if ($env:GITHUB_REF_TYPE -eq 'tag') { $env:GITHUB_REF_NAME.TrimStart('v') } else { '2.0.8' }
+          $tag = if ($env:GITHUB_REF_TYPE -eq 'tag') { $env:GITHUB_REF_NAME.TrimStart('v') } else { '2.0.12' }
           $v = ($tag -split '-')[0]
           dotnet publish src/Trilha -c Release -p:Version=$v -o dist/app
           if ($LASTEXITCODE -ne 0) { throw "falha ao compilar" }
-          New-Item -ItemType Directory -Force dist/zip | Out-Null
-          Copy-Item dist/app/NiderEtapas.exe dist/zip/
-          Copy-Item LEIA-ME.txt dist/zip/
-          Compress-Archive -Path dist/zip/* -DestinationPath NiderEtapas-Windows.zip -Force
+          # Um .exe só, no padrão da família (nider-text-setup-…, nider-pdf-setup-…). O próprio
+          # NiderEtapas.exe é o instalador: aberto fora da pasta de instalação, mostra o painel.
+          New-Item -ItemType Directory -Force dist/release | Out-Null
+          Copy-Item dist/app/NiderEtapas.exe "dist/release/nider-etapas-setup-$tag-windows-x64.exe"
       - uses: actions/upload-artifact@v4
         with:
           name: NiderEtapas-Windows
-          path: NiderEtapas-Windows.zip
+          path: dist/release/*.exe
           if-no-files-found: error
       - name: Publicar versão no GitHub
         if: startsWith(github.ref, 'refs/tags/v')
@@ -40,5 +40,5 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh release create "${GITHUB_REF_NAME}" NiderEtapas-Windows.zip --title "Nider Etapas ${GITHUB_REF_NAME}" \
-            --notes "Nider Etapas para Windows. Extraia o zip e abra o NiderEtapas.exe."
+          gh release create "${GITHUB_REF_NAME}" dist/release/*.exe --title "Nider Etapas ${GITHUB_REF_NAME}" \
+            --notes "Nider Etapas para Windows. Abra o instalador e clique em Instalar (ou Atualizar)."

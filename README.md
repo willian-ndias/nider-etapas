@@ -5,10 +5,15 @@ PDF com setas, círculos, textos e números. Para Windows, sem precisar de admin
 
 ## Instalar
 
-1. Baixe `NiderEtapas-Windows.zip` na página de [Releases](https://github.com/willian-ndias/nider-etapas/releases).
-2. Extraia, abra o `NiderEtapas.exe` e clique em **Instalar** (ou em **Usar sem instalar**).
+1. Baixe `nider-etapas-setup-…-windows-x64.exe` na aba Downloads do Nider ou na página de
+   [Releases](https://github.com/willian-ndias/nider-etapas/releases).
+2. Abra o arquivo e clique em **Instalar** (ou em **Usar sem instalar**).
 3. Se o Windows avisar que o aplicativo não é reconhecido, clique em **Mais informações** e depois em
    **Executar assim mesmo**.
+
+Depois de instalado, o próprio programa avisa ao abrir quando sai versão nova e se atualiza
+sozinho (consulta `nider.com.br/api/apps/nider-etapas/versao`; precisa da versão 2.0.12 ou mais
+nova — as anteriores têm de ser atualizadas à mão uma vez).
 
 Mais detalhes em [LEIA-ME.txt](LEIA-ME.txt).
 
