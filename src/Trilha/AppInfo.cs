@@ -21,7 +21,7 @@ public static class AppInfo
     /// {"version":"2.1.0","url":"https://.../NiderEtapas.exe","notes":"..."}.
     /// Vazio = sem verificação automática pela internet.
     /// </summary>
-    public const string UpdateUrl = "";
+    public const string UpdateUrl = "https://nider.com.br/api/apps/nider-etapas/versao";
 
     public static Version Version { get; } =
         Assembly.GetExecutingAssembly().GetName().Version ?? new Version(1, 0, 0);

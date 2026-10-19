@@ -23,9 +23,17 @@ public static class Update
             var json = await http.GetStringAsync(AppInfo.UpdateUrl);
             using var doc = JsonDocument.Parse(json);
             var root = doc.RootElement;
-            var version = Version.Parse(root.GetProperty("version").GetString() ?? "0.0.0");
-            var url = root.GetProperty("url").GetString() ?? "";
-            var notes = root.TryGetProperty("notes", out var n) ? n.GetString() ?? "" : "";
+            // Resposta do site Nider: {"versao":"2.1.0","data":"...","notas":"...","pagina":"https://.../downloads"}.
+            // Também aceita o formato antigo {"version","url","notes"}.
+            string Text(string a, string b) =>
+                root.TryGetProperty(a, out var x) && x.ValueKind == JsonValueKind.String ? x.GetString() ?? "" :
+                root.TryGetProperty(b, out var y) && y.ValueKind == JsonValueKind.String ? y.GetString() ?? "" : "";
+            var raw = Text("versao", "version").TrimStart('v', 'V');
+            var dash = raw.IndexOf('-');
+            if (dash > 0) raw = raw[..dash];
+            if (!Version.TryParse(raw, out var version)) return null;
+            var url = Text("pagina", "url");
+            var notes = Text("notas", "notes");
             return version > AppInfo.Version && url.StartsWith("https://", StringComparison.OrdinalIgnoreCase)
                 ? new Info(version, url, notes) : null;
         }

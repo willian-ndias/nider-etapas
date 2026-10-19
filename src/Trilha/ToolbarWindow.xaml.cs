@@ -299,19 +299,17 @@ public partial class ToolbarWindow : Window
         }
     }
 
-    async void Update_Click(object sender, RoutedEventArgs e)
+    void Update_Click(object sender, RoutedEventArgs e)
     {
         if (_update == null) return;
-        var r = GlassDialog.Show(this, $"Atualizar para a versão {_update.Version}?",
-            string.IsNullOrWhiteSpace(_update.Notes) ? "A nova versão será baixada e instalada." : _update.Notes, "Atualizar", "Depois");
+        var r = GlassDialog.Show(this, $"Nova versão {_update.Version} disponível",
+            string.IsNullOrWhiteSpace(_update.Notes) ? "Abrir a página de downloads para baixar a nova versão?" : _update.Notes,
+            "Abrir downloads", "Depois");
         if (r != 0) return;
         try
         {
-            var file = await Update.DownloadAsync(_update);
-            System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(file) { UseShellExecute = true });
-            _dirty = false;
-            Close();
+            System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(_update.Url) { UseShellExecute = true });
         }
-        catch (Exception ex) { Log.Error("Update", ex); GlassDialog.Error(this, "Não consegui baixar a atualização."); }
+        catch (Exception ex) { Log.Error("Update", ex); GlassDialog.Error(this, "Não consegui abrir a página de downloads."); }
     }
 }
