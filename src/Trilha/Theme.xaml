@@ -27,8 +27,8 @@
 
     <!-- vidro: tinta escura por cima do fundo desfocado -->
     <LinearGradientBrush x:Key="GlassTint" StartPoint="0,0" EndPoint="0,1">
-        <GradientStop Color="#B0303540" Offset="0"/>
-        <GradientStop Color="#C8171B21" Offset="1"/>
+        <GradientStop Color="#F2303540" Offset="0"/>
+        <GradientStop Color="#F7171B21" Offset="1"/>
     </LinearGradientBrush>
     <LinearGradientBrush x:Key="GlassSheen" StartPoint="0,0" EndPoint="0,1">
         <GradientStop Color="#26FFFFFF" Offset="0"/>
