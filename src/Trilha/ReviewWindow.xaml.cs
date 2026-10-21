@@ -314,6 +314,13 @@ public partial class ReviewWindow : Window
             GlassDialog.Show(this, "Não há passos", "Grave alguns passos antes de salvar o manual.", "OK");
             return;
         }
+        // O título do manual é confirmado aqui, onde a pessoa está (e não só no topo da janela).
+        var asked = GlassDialog.Ask(this, "Título do manual",
+            "Ele aparece no topo do PDF e vira o nome do arquivo.",
+            string.IsNullOrWhiteSpace(TitleBox.Text) ? "Manual passo a passo" : TitleBox.Text.Trim(),
+            "Continuar", "Cancelar");
+        if (asked == null) return;
+        TitleBox.Text = asked.Trim();
         var title = string.IsNullOrWhiteSpace(TitleBox.Text) ? "Manual passo a passo" : TitleBox.Text.Trim();
         var dlg = new Microsoft.Win32.SaveFileDialog
         {

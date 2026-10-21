@@ -53,6 +53,41 @@ public partial class GlassDialog : Window
         return d._result;
     }
 
+    /// <summary>
+    /// Pergunta um texto (ex.: o título do manual), já preenchido com <paramref name="initial"/>.
+    /// Retorna o texto confirmado, ou null se cancelou.
+    /// </summary>
+    public static string? Ask(Window? owner, string title, string message, string initial, string ok, string cancel)
+    {
+        string? answer = null;
+        var d = new GlassDialog();
+        d.TitleText.Text = title;
+        d.MessageText.Text = message;
+        d.InputBox.Visibility = Visibility.Visible;
+        d.InputBox.Text = initial;
+        d.Loaded += (_, _) => { d.InputBox.Focus(); d.InputBox.SelectAll(); };
+        foreach (var (label, primary) in new[] { (cancel, false), (ok, true) })
+        {
+            var b = new Button
+            {
+                Content = label,
+                Style = (Style)d.FindResource(primary ? "PrimaryButton" : "SecondaryButton"),
+                Margin = new Thickness(8, 0, 0, 0),
+                MinWidth = 96,
+                IsDefault = primary,
+            };
+            b.Click += (_, _) => { if (primary) answer = d.InputBox.Text; d.Close(); };
+            d.Buttons.Children.Add(b);
+        }
+        if (owner != null && owner.IsVisible)
+        {
+            d.Owner = owner;
+            d.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+        }
+        d.ShowDialog();
+        return answer;
+    }
+
     public static void Error(Window? owner, string message) =>
         Show(owner, "Algo deu errado", message + $"\n\nDetalhes em: {Log.PathFile}", "OK");
 }

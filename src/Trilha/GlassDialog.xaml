@@ -25,6 +25,8 @@
                 <StackPanel Grid.Column="1" Margin="16,0,0,0">
                     <TextBlock x:Name="TitleText" Style="{StaticResource Title}" FontSize="18" TextWrapping="Wrap"/>
                     <TextBlock x:Name="MessageText" Style="{StaticResource Body}" Margin="0,6,0,0"/>
+                    <TextBox x:Name="InputBox" Style="{StaticResource GlassTextBox}" FontSize="15" FontWeight="SemiBold"
+                             Margin="0,14,0,0" Visibility="Collapsed"/>
                 </StackPanel>
                 <StackPanel x:Name="Buttons" Grid.Row="1" Grid.ColumnSpan="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,22,0,0"/>
             </Grid>

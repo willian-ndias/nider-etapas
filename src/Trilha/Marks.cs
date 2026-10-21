@@ -146,14 +146,29 @@ public sealed class TextMark : Mark
 
     public override void Move(int dx, int dy) => At.Offset(dx, dy);
 
+    static readonly Bitmap MeasureBitmap = new(1, 1);
+
+    /// <summary>A caixa do texto na imagem (para selecionar, arrastar e editar com clique duplo).</summary>
+    public RectangleF Bounds()
+    {
+        using var g = Graphics.FromImage(MeasureBitmap);
+        return Box(g);
+    }
+
+    RectangleF Box(Graphics g)
+    {
+        using var font = new Font("Segoe UI Semibold", FontPx, FontStyle.Regular, GraphicsUnit.Pixel);
+        var size = g.MeasureString(string.IsNullOrEmpty(Text) ? " " : Text, font);
+        return new RectangleF(At.X, At.Y, size.Width + FontPx * 0.9f, size.Height + FontPx * 0.44f);
+    }
+
     public override void Draw(Graphics g)
     {
         if (string.IsNullOrWhiteSpace(Text)) return;
         using var font = new Font("Segoe UI Semibold", FontPx, FontStyle.Regular, GraphicsUnit.Pixel);
-        var size = g.MeasureString(Text, font);
         var padX = FontPx * 0.45f;
         var padY = FontPx * 0.22f;
-        var box = new RectangleF(At.X, At.Y, size.Width + padX * 2, size.Height + padY * 2);
+        var box = Box(g);
         using var path = new GraphicsPath();
         BoxMark.AddRounded(path, box, FontPx * 0.45f);
         using (var shadow = new GraphicsPath())

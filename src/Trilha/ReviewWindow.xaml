@@ -10,7 +10,7 @@
 
     <Grid x:Name="Root">
         <Grid.RowDefinitions>
-            <RowDefinition Height="64"/>
+            <RowDefinition Height="76"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
@@ -27,9 +27,16 @@
                 <TextBlock x:Name="AppName" Text="Nider Etapas" Style="{StaticResource Title}" FontSize="18" Margin="12,0,0,0" VerticalAlignment="Center"/>
                 <Border Width="1" Height="22" Background="{StaticResource Divider}" Margin="16,0"/>
             </StackPanel>
-            <TextBox x:Name="TitleBox" Grid.Column="1" Style="{StaticResource GlassTextBox}" FontSize="15" FontWeight="SemiBold"
-                     MaxWidth="560" HorizontalAlignment="Left" MinWidth="380" VerticalAlignment="Center"
-                     Tag="Título do manual" WindowChrome.IsHitTestVisibleInChrome="True"/>
+            <!-- título do MANUAL (o nome do PDF): com rótulo e lápis, para ninguém confundir com o título de um bloco -->
+            <StackPanel Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Left" MinWidth="380" MaxWidth="560">
+                <StackPanel Orientation="Horizontal" Margin="2,0,0,3">
+                    <Path Data="{StaticResource IcPen}" Style="{StaticResource Icon}" Width="11" Height="11" Margin="0,0,6,0"/>
+                    <TextBlock Text="TÍTULO DO MANUAL · vai no topo do PDF" Style="{StaticResource Label}" Margin="0"/>
+                </StackPanel>
+                <TextBox x:Name="TitleBox" Style="{StaticResource GlassTextBox}" FontSize="15" FontWeight="SemiBold"
+                         Tag="Título do manual" ToolTip="Clique para mudar o título do manual (também é o nome do arquivo PDF)"
+                         WindowChrome.IsHitTestVisibleInChrome="True"/>
+            </StackPanel>
             <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Top" Margin="0,8,0,0">
                 <Button Style="{StaticResource ChromeButton}" Click="Min_Click"><Path Data="{StaticResource IcMin}" Style="{StaticResource Icon}" Width="14" Height="14"/></Button>
                 <Button Style="{StaticResource ChromeButton}" Click="Max_Click"><Path Data="{StaticResource IcMax}" Style="{StaticResource Icon}" Width="13" Height="13"/></Button>
@@ -169,14 +176,15 @@
                             <RowDefinition Height="*"/>
                             <RowDefinition Height="Auto"/>
                         </Grid.RowDefinitions>
-                        <TextBlock Text="TÍTULO (OPCIONAL)" Style="{StaticResource Label}"/>
+                        <TextBlock Text="TÍTULO DESTE BLOCO (OPCIONAL)" Style="{StaticResource Label}"/>
                         <TextBox x:Name="TextTitleBox" Grid.Row="1" Style="{StaticResource GlassTextBox}" FontSize="16" FontWeight="SemiBold"
                                  Tag="Ex.: Antes de começar" TextChanged="TextTitle_Changed"/>
                         <TextBlock Grid.Row="2" Text="TEXTO" Style="{StaticResource Label}" Margin="0,16,0,0"/>
                         <TextBox x:Name="TextBodyBox" Grid.Row="3" Style="{StaticResource GlassTextBox}" FontSize="14"
                                  Tag="Escreva aqui. Cada Enter começa um parágrafo novo." TextWrapping="Wrap" AcceptsReturn="True"
                                  VerticalContentAlignment="Top" VerticalScrollBarVisibility="Auto" TextChanged="TextBody_Changed"/>
-                        <TextBlock Grid.Row="4" Text="Este bloco entra no PDF entre os passos, sem print e sem número." Style="{StaticResource Body}" Margin="0,10,0,0"/>
+                        <TextBlock Grid.Row="4" Style="{StaticResource Body}" Margin="0,10,0,0" TextWrapping="Wrap"
+                                   Text="Este bloco entra no PDF entre os passos, sem print e sem número. O título do MANUAL fica no topo da janela e é confirmado ao clicar em Salvar PDF."/>
                     </Grid>
                 </Border>
             </Grid>

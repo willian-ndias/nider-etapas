@@ -2,6 +2,11 @@ name: Nider Etapas para Windows
 
 on:
   workflow_dispatch:
+    inputs:
+      versao:
+        description: "Publicar esta versão (ex.: 2.0.12). Vazio = só compilar, sem publicar."
+        required: false
+        default: ""
   push:
     tags: ["v*"]
 
@@ -21,7 +26,8 @@ jobs:
       - name: Compilar e empacotar
         shell: pwsh
         run: |
-          $tag = if ($env:GITHUB_REF_TYPE -eq 'tag') { $env:GITHUB_REF_NAME.TrimStart('v') } else { '2.0.12' }
+          $pub = "${{ github.event.inputs.versao }}".Trim().TrimStart('v')
+          $tag = if ($env:GITHUB_REF_TYPE -eq 'tag') { $env:GITHUB_REF_NAME.TrimStart('v') } elseif ($pub) { $pub } else { '2.0.12' }
           $v = ($tag -split '-')[0]
           dotnet publish src/Trilha -c Release -p:Version=$v -o dist/app
           if ($LASTEXITCODE -ne 0) { throw "falha ao compilar" }
@@ -64,4 +70,16 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           gh release create "${GITHUB_REF_NAME}" dist/release/*.exe --title "Nider Etapas ${GITHUB_REF_NAME}" \
+            --notes "Nider Etapas para Windows. Abra o instalador e clique em Instalar (ou Atualizar)."
+      # Publicação sem tag manual: "Run workflow" com a versão preenchida cria a tag e a release
+      # (útil quando quem publica não pode empurrar tags, como as sessões remotas).
+      - name: Publicar versão pedida no "Run workflow"
+        if: github.event_name == 'workflow_dispatch' && github.event.inputs.versao != ''
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSAO: ${{ github.event.inputs.versao }}
+        run: |
+          v="v${VERSAO#v}"
+          gh release create "$v" dist/release/*.exe --target "$GITHUB_SHA" --title "Nider Etapas $v" \
             --notes "Nider Etapas para Windows. Abra o instalador e clique em Instalar (ou Atualizar)."
