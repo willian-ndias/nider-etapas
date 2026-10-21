@@ -36,10 +36,11 @@ public sealed class AnnotationSurface : Grid
     TextMark? _editing;
     string _editingWas = "";
 
-    /// <summary>Texto selecionado com um clique: dá para arrastar, editar (clique duplo) ou apagar (Delete).</summary>
-    TextMark? _selected;
-    TextMark? _dragging;
-    SD.Point _dragFrom, _dragAt;
+    /// <summary>Desenho selecionado: texto com um clique, os demais (seta, número, quadro, traço) com dois.
+    /// Selecionado, dá para arrastar e apagar (Delete); o texto também se edita com clique duplo.</summary>
+    Mark? _selected;
+    Mark? _dragging;
+    SD.Point _dragLast;
     bool _dragMoved;
 
     public Tool Tool { get; set; } = Tool.Arrow;
@@ -156,7 +157,7 @@ public sealed class AnnotationSurface : Grid
             }
             using var g = SD.Graphics.FromImage(_frame);
             Smooth(g);
-            var b = _selected.Bounds();
+            var b = _selected.Area();
             b.Inflate(5, 5);
             var w = Math.Max(2f, (float)DpiScale * 1.5f);
             using var halo = new SD.Pen(SD.Color.FromArgb(150, 0, 0, 0), w + 2);
@@ -193,11 +194,19 @@ public sealed class AnnotationSurface : Grid
         return null;
     }
 
-    void Select(TextMark? t)
+    void Select(Mark? m)
     {
-        if (_selected == t) return;
-        _selected = t;
+        if (_selected == m) return;
+        _selected = m;
         _dirty = true;
+    }
+
+    /// <summary>O desenho (que não seja texto) mais de cima sob o ponto, ou nenhum.</summary>
+    Mark? MarkAt(SD.Point p)
+    {
+        for (int i = Marks.Count - 1; i >= 0; i--)
+            if (Marks[i] is not TextMark && Marks[i].Hit(p)) return Marks[i];
+        return null;
     }
 
     void OnKey(object sender, KeyEventArgs e)
@@ -211,7 +220,7 @@ public sealed class AnnotationSurface : Grid
             Changed?.Invoke();
             e.Handled = true;
         }
-        else if (e.Key == Key.Enter || e.Key == Key.F2) { EditExisting(_selected); e.Handled = true; }
+        else if ((e.Key == Key.Enter || e.Key == Key.F2) && _selected is TextMark tm) { EditExisting(tm); e.Handled = true; }
         else if (e.Key == Key.Escape) { Select(null); e.Handled = true; }
     }
 
@@ -229,13 +238,30 @@ public sealed class AnnotationSurface : Grid
             else
             {
                 _dragging = hit;
-                _dragFrom = p;
-                _dragAt = hit.At;
+                _dragLast = p;
                 _dragMoved = false;
                 _inner.CaptureMouse();
             }
             e.Handled = true;
             return;
+        }
+        // Seta, número, quadro, círculo ou traço: dois cliques selecionam; selecionado, arrastar move.
+        if (MarkAt(p) is Mark mark)
+        {
+            if (e.ClickCount >= 2 || mark == _selected)
+            {
+                if (_current != null) { _current = null; _inner.ReleaseMouseCapture(); }
+                Focus();
+                Select(mark);
+                _dragging = mark;
+                _dragLast = p;
+                _dragMoved = false;
+                _inner.CaptureMouse();
+                e.Handled = true;
+                return;
+            }
+            // Primeiro clique sobre um desenho: não cria número nem caixa de texto em cima dele.
+            if (Tool == Tool.Number || Tool == Tool.Text) { e.Handled = true; return; }
         }
         Select(null);
         switch (Tool)
@@ -258,10 +284,11 @@ public sealed class AnnotationSurface : Grid
         if (_dragging != null)
         {
             var q = ToImage(e);
-            var at = new SD.Point(_dragAt.X + q.X - _dragFrom.X, _dragAt.Y + q.Y - _dragFrom.Y);
-            if (at != _dragging.At)
+            int dx = q.X - _dragLast.X, dy = q.Y - _dragLast.Y;
+            if (dx != 0 || dy != 0)
             {
-                _dragging.At = at;
+                _dragging.Move(dx, dy);
+                _dragLast = q;
                 _dragMoved = true;
                 Rebuild();
             }
@@ -270,7 +297,9 @@ public sealed class AnnotationSurface : Grid
         if (_current == null)
         {
             // Sobre um texto: a mãozinha de mover avisa que dá para arrastar.
-            _inner.Cursor = _base != null && TextAt(ToImage(e)) != null ? Cursors.SizeAll : (Tool == Tool.Text ? Cursors.IBeam : Cursors.Cross);
+            var over = _base != null ? ToImage(e) : default;
+            bool movable = _base != null && (TextAt(over) != null || (_selected != null && _selected.Hit(over)));
+            _inner.Cursor = movable ? Cursors.SizeAll : (Tool == Tool.Text ? Cursors.IBeam : Cursors.Cross);
             return;
         }
         var p = ToImage(e);

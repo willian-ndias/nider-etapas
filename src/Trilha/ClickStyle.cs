@@ -86,6 +86,12 @@ public sealed class ClickMark : Mark
         if (Element is Rectangle e) { e.Offset(dx, dy); Element = e; }
     }
 
+    /// <summary>Área para selecionar e arrastar o marcador: o botão clicado ou um círculo em volta do clique.</summary>
+    public override RectangleF Area() =>
+        Element is Rectangle e && e.Width > 4 && e.Height > 4
+            ? RectangleF.Inflate(e, 8, 8)
+            : new RectangleF(Center.X - 40, Center.Y - 40, 80, 80);
+
     bool HasElement(RectangleF bounds) =>
         Element is Rectangle e && e.Width > 4 && e.Height > 4 && e.Width * (float)e.Height < bounds.Width * bounds.Height * 0.5f;
 

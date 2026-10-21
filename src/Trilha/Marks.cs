@@ -19,6 +19,26 @@ public abstract class Mark
     /// <summary>Cópia independente (a paleta ao vivo usa os mesmos desenhos em vários prints).</summary>
     public virtual Mark Clone() => (Mark)MemberwiseClone();
 
+    /// <summary>Retângulo que envolve o desenho (para a seleção tracejada).</summary>
+    public abstract RectangleF Area();
+
+    /// <summary>O ponto (pixels da imagem) cai sobre o desenho? Usado para selecionar e arrastar.</summary>
+    public virtual bool Hit(Point p)
+    {
+        var a = Area();
+        a.Inflate(6, 6);
+        return a.Contains(p);
+    }
+
+    /// <summary>Distância do ponto até o segmento a–b.</summary>
+    protected static float DistToSegment(Point p, Point a, Point b)
+    {
+        float dx = b.X - a.X, dy = b.Y - a.Y, len2 = dx * dx + dy * dy;
+        float t = len2 <= 0 ? 0 : Math.Clamp(((p.X - a.X) * dx + (p.Y - a.Y) * dy) / len2, 0f, 1f);
+        float x = a.X + t * dx - p.X, y = a.Y + t * dy - p.Y;
+        return (float)Math.Sqrt(x * x + y * y);
+    }
+
     protected static Rectangle Normalize(Point a, Point b) =>
         Rectangle.FromLTRB(Math.Min(a.X, b.X), Math.Min(a.Y, b.Y), Math.Max(a.X, b.X), Math.Max(a.Y, b.Y));
 
@@ -34,6 +54,24 @@ public sealed class PenMark : Mark
     public override Mark Clone() { var c = (PenMark)base.Clone(); c.Points = new List<Point>(Points); return c; }
 
     public override void Move(int dx, int dy) { for (int i = 0; i < Points.Count; i++) Points[i] = new Point(Points[i].X + dx, Points[i].Y + dy); }
+
+    public override RectangleF Area()
+    {
+        if (Points.Count == 0) return RectangleF.Empty;
+        float w = Highlighter ? Width * 4 : Width;
+        var r = RectangleF.FromLTRB(Points.Min(q => q.X), Points.Min(q => q.Y), Points.Max(q => q.X), Points.Max(q => q.Y));
+        r.Inflate(w / 2 + 2, w / 2 + 2);
+        return r;
+    }
+
+    public override bool Hit(Point p)
+    {
+        float tol = (Highlighter ? Width * 2 : Width / 2) + 8;
+        if (Points.Count == 1) return DistToSegment(p, Points[0], Points[0]) <= tol;
+        for (int i = 1; i < Points.Count; i++)
+            if (DistToSegment(p, Points[i - 1], Points[i]) <= tol) return true;
+        return false;
+    }
 
     public override void Draw(Graphics g)
     {
@@ -64,6 +102,15 @@ public sealed class ArrowMark : Mark
     public Point From, To;
 
     public override void Move(int dx, int dy) { From.Offset(dx, dy); To.Offset(dx, dy); }
+
+    public override RectangleF Area()
+    {
+        RectangleF r = Normalize(From, To);
+        r.Inflate(Width * 3 + 4, Width * 3 + 4);
+        return r;
+    }
+
+    public override bool Hit(Point p) => DistToSegment(p, From, To) <= Width * 2 + 8;
 
     public override void Draw(Graphics g)
     {
@@ -107,6 +154,13 @@ public sealed class BoxMark : Mark
 
     public override void Move(int dx, int dy) { A.Offset(dx, dy); B.Offset(dx, dy); }
 
+    public override RectangleF Area()
+    {
+        RectangleF r = Normalize(A, B);
+        r.Inflate(Width / 2 + 2, Width / 2 + 2);
+        return r;
+    }
+
     public override void Draw(Graphics g)
     {
         var r = Normalize(A, B);
@@ -145,6 +199,8 @@ public sealed class TextMark : Mark
     public static float FontPxFor(float width) => 14 + width * 3;
 
     public override void Move(int dx, int dy) => At.Offset(dx, dy);
+
+    public override RectangleF Area() => Bounds();
 
     static readonly Bitmap MeasureBitmap = new(1, 1);
 
@@ -192,6 +248,12 @@ public sealed class NumberMark : Mark
     public int Number = 1;
 
     public override void Move(int dx, int dy) => Center.Offset(dx, dy);
+
+    float Radius => 13 + Width * 1.6f;
+
+    public override RectangleF Area() => new(Center.X - Radius - 2, Center.Y - Radius - 2, Radius * 2 + 4, Radius * 2 + 4);
+
+    public override bool Hit(Point p) => DistToSegment(p, Center, Center) <= Radius + 6;
 
     public override void Draw(Graphics g)
     {
