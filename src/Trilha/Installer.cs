@@ -22,6 +22,19 @@ public static class Installer
 
     static string StartMenuDir => Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Programs));
     static string StartMenuLink => Path.Combine(StartMenuDir, AppInfo.Name + ".lnk");
+    static string PinnedLink => Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+        "Microsoft", "Internet Explorer", "Quick Launch", "User Pinned", "TaskBar", AppInfo.Name + ".lnk");
+
+    [DllImport("shell32.dll")]
+    static extern void SHChangeNotify(int eventId, uint flags, IntPtr item1, IntPtr item2);
+
+    /// <summary>Avisa o Windows que os ícones mudaram (senão a barra de tarefas e o menu Iniciar ficam com o ícone antigo em cache).</summary>
+    public static void RefreshShellIcons()
+    {
+        try { SHChangeNotify(0x08000000 /* SHCNE_ASSOCCHANGED */, 0 /* SHCNF_IDLIST */, IntPtr.Zero, IntPtr.Zero); }
+        catch (Exception ex) { Log.Error("RefreshShellIcons", ex); }
+    }
+
     static string DesktopLink => Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory), AppInfo.Name + ".lnk");
 
     public static bool IsInstalled => File.Exists(AppInfo.InstalledExe);
@@ -87,6 +100,9 @@ public static class Installer
         Shortcut.Create(StartMenuLink, AppInfo.InstalledExe, AppInfo.Tagline);
         if (desktopShortcut) Shortcut.Create(DesktopLink, AppInfo.InstalledExe, AppInfo.Tagline);
         else TryDelete(DesktopLink);
+        // Atalho fixado na barra de tarefas: recria para o Windows pegar o ícone novo.
+        if (File.Exists(PinnedLink)) Shortcut.Create(PinnedLink, AppInfo.InstalledExe, AppInfo.Tagline);
+        RefreshShellIcons();
 
         progress.Report((0.96, "Registrando no Windows..."));
         using (var k = Registry.CurrentUser.CreateSubKey(UninstallKey))
