@@ -23,6 +23,9 @@ public static class AppInfo
     /// </summary>
     public const string UpdateUrl = "https://nider.com.br/api/apps/nider-etapas/versao";
 
+    /// <summary>Manual em PDF, sempre o da versão mais nova (o site redireciona para o arquivo da release).</summary>
+    public const string ManualUrl = "https://nider.com.br/api/apps/nider-etapas/manual";
+
     public static Version Version { get; } =
         Assembly.GetExecutingAssembly().GetName().Version ?? new Version(1, 0, 0);
 

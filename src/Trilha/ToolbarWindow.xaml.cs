@@ -288,6 +288,15 @@ public partial class ToolbarWindow : Window
         Application.Current.Shutdown();
     }
 
+    void Manual_Click(object sender, RoutedEventArgs e)
+    {
+        try
+        {
+            System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(AppInfo.ManualUrl) { UseShellExecute = true });
+        }
+        catch (Exception ex) { Log.Error("Manual", ex); GlassDialog.Error(this, "Não consegui abrir o manual."); }
+    }
+
     // ------------------------------------------------------------ atualização
 
     async void CheckForUpdates()

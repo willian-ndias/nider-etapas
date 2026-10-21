@@ -87,7 +87,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh release create "${GITHUB_REF_NAME}" dist/release/*.exe --title "Nider Etapas ${GITHUB_REF_NAME}" \
+          gh release create "${GITHUB_REF_NAME}" dist/release/*.exe manual/Manual-Nider-Etapas.pdf --title "Nider Etapas ${GITHUB_REF_NAME}" \
             --notes-file notas.md
       # Publicação sem tag manual: "Run workflow" com a versão preenchida cria a tag e a release
       # (útil quando quem publica não pode empurrar tags, como as sessões remotas).
@@ -99,5 +99,5 @@ jobs:
           VERSAO: ${{ github.event.inputs.versao }}
         run: |
           v="v${VERSAO#v}"
-          gh release create "$v" dist/release/*.exe --target "$GITHUB_SHA" --title "Nider Etapas $v" \
+          gh release create "$v" dist/release/*.exe manual/Manual-Nider-Etapas.pdf --target "$GITHUB_SHA" --title "Nider Etapas $v" \
             --notes-file notas.md
