@@ -20,6 +20,8 @@ jobs:
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: actions/setup-dotnet@v4
         with:
           dotnet-version: "8.0.x"
@@ -63,6 +65,22 @@ jobs:
           name: NiderEtapas-Windows
           path: dist/release/*.exe
           if-no-files-found: error
+      - name: Notas da versão (o que mudou desde a versão anterior)
+        if: startsWith(github.ref, 'refs/tags/v') || github.event_name == 'workflow_dispatch'
+        shell: bash
+        run: |
+          atual="${GITHUB_REF_NAME}"
+          git rev-parse -q --verify "refs/tags/$atual" >/dev/null || atual="HEAD"
+          anterior=$(git describe --tags --abbrev=0 --match 'v*' "$atual^" 2>/dev/null || true)
+          {
+            echo "## O que há de novo"
+            echo
+            git log ${anterior:+$anterior..}$atual --no-merges --pretty='- %s' \
+              | grep -v -i -E 'dependabot|^- (bump|chore\(deps\)|ci\(deps\))|ui_shot|^- Merge ' | head -40 || true
+            echo
+            echo "_Se o Windows avisar que o aplicativo não é reconhecido, clique em **Mais informações** e depois em **Executar assim mesmo**._"
+          } > notas.md
+          cat notas.md
       - name: Publicar versão no GitHub
         if: startsWith(github.ref, 'refs/tags/v')
         shell: bash
@@ -70,7 +88,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           gh release create "${GITHUB_REF_NAME}" dist/release/*.exe --title "Nider Etapas ${GITHUB_REF_NAME}" \
-            --notes "Nider Etapas para Windows. Abra o instalador e clique em Instalar (ou Atualizar)."
+            --notes-file notas.md
       # Publicação sem tag manual: "Run workflow" com a versão preenchida cria a tag e a release
       # (útil quando quem publica não pode empurrar tags, como as sessões remotas).
       - name: Publicar versão pedida no "Run workflow"
@@ -82,4 +100,4 @@ jobs:
         run: |
           v="v${VERSAO#v}"
           gh release create "$v" dist/release/*.exe --target "$GITHUB_SHA" --title "Nider Etapas $v" \
-            --notes "Nider Etapas para Windows. Abra o instalador e clique em Instalar (ou Atualizar)."
+            --notes-file notas.md
