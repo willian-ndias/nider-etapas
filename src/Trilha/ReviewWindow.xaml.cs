@@ -341,7 +341,7 @@ public partial class ReviewWindow : Window
                     if (steps[i].IsTextBlock)
                         pdfSteps.Add(new PdfStep(0, steps[i].Description, steps[i].Comment, Array.Empty<byte>(), IsText: true));
                     else
-                        pdfSteps.Add(new PdfStep(++n, steps[i].Description, steps[i].Comment, steps[i].RenderJpeg()));
+                        pdfSteps.Add(new PdfStep(++n, steps[i].Description, steps[i].Comment, steps[i].RenderPng()));
                     report.Report(80.0 * (i + 1) / steps.Count);
                 }
                 PdfExporter.Export(path, title, pdfSteps, DateTime.Now);

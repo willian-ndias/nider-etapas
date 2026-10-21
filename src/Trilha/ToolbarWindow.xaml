@@ -17,7 +17,7 @@
 
             <StackPanel x:Name="Bar" Orientation="Horizontal" Margin="10,10" VerticalAlignment="Center">
 
-                <Image Source="pack://application:,,,/logo.png" Width="42" Height="42" Margin="0,0,10,0" ToolTip="Nider Etapas · arraste para mover" RenderOptions.BitmapScalingMode="HighQuality"/>
+                <Image Source="{StaticResource NiderLogo}" Width="42" Height="42" Margin="0,0,10,0" ToolTip="Nider Etapas · arraste para mover" RenderOptions.BitmapScalingMode="HighQuality"/>
 
                 <Button x:Name="RecordButton" Style="{StaticResource IconButton}" Width="42" Height="42" Click="Record_Click">
                     <Button.ToolTip>

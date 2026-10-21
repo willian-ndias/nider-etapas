@@ -153,10 +153,13 @@ public sealed class Step
         ScreenshotPng = png; FullPng = null; CropOrigin = Point.Empty; Marks.Clear();
     }
 
-    public byte[] RenderJpeg(long quality = 88)
+    /// <summary>Imagem final do passo em PNG (sem perda): JPEG borra e serrilha texto de tela.</summary>
+    public byte[] RenderPng()
     {
         using var bmp = Render();
-        return Imaging.ToJpeg(bmp, quality);
+        using var ms = new MemoryStream();
+        bmp.Save(ms, ImageFormat.Png);
+        return ms.ToArray();
     }
 
     /// <summary>Miniatura de um bloco de texto: um cartão claro com linhas, como uma página.</summary>
@@ -191,16 +194,6 @@ public sealed class Step
 
 internal static class Imaging
 {
-    public static byte[] ToJpeg(Bitmap bmp, long quality)
-    {
-        var codec = ImageCodecInfo.GetImageEncoders().First(c => c.FormatID == ImageFormat.Jpeg.Guid);
-        using var p = new EncoderParameters(1);
-        p.Param[0] = new EncoderParameter(System.Drawing.Imaging.Encoder.Quality, quality);
-        using var ms = new MemoryStream();
-        bmp.Save(ms, codec, p);
-        return ms.ToArray();
-    }
-
     /// <summary>Tira um print de uma área da tela (em pixels físicos).</summary>
     public static Bitmap Capture(Rectangle area)
     {

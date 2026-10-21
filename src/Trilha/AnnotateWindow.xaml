@@ -14,7 +14,7 @@
         <!-- barra de título (só no modo editar) -->
         <Grid x:Name="TitleBar" Height="48" Visibility="Collapsed">
             <StackPanel Orientation="Horizontal" Margin="18,0" VerticalAlignment="Center">
-                <Image Source="pack://application:,,,/logo.png" Width="30" Height="30" RenderOptions.BitmapScalingMode="HighQuality"/>
+                <Image Source="{StaticResource NiderLogo}" Width="30" Height="30" RenderOptions.BitmapScalingMode="HighQuality"/>
                 <TextBlock x:Name="WindowTitle" Text="Editar passo" Foreground="{StaticResource TextPrimary}" FontSize="14" FontWeight="SemiBold"
                            Margin="12,0,0,0" VerticalAlignment="Center"/>
             </StackPanel>

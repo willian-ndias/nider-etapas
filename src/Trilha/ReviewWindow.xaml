@@ -23,7 +23,7 @@
                 <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
             <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                <Image Source="pack://application:,,,/logo.png" Width="40" Height="40" RenderOptions.BitmapScalingMode="HighQuality"/>
+                <Image Source="{StaticResource NiderLogo}" Width="40" Height="40" RenderOptions.BitmapScalingMode="HighQuality"/>
                 <TextBlock x:Name="AppName" Text="Nider Etapas" Style="{StaticResource Title}" FontSize="18" Margin="12,0,0,0" VerticalAlignment="Center"/>
                 <Border Width="1" Height="22" Background="{StaticResource Divider}" Margin="16,0"/>
             </StackPanel>

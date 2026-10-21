@@ -29,6 +29,29 @@ jobs:
           # NiderEtapas.exe é o instalador: aberto fora da pasta de instalação, mostra o painel.
           New-Item -ItemType Directory -Force dist/release | Out-Null
           Copy-Item dist/app/NiderEtapas.exe "dist/release/nider-etapas-setup-$tag-windows-x64.exe"
+      - name: Prévia da logo vetorial (WPF real, 256/48/32/16 px)
+        shell: pwsh
+        run: |
+          Add-Type -AssemblyName PresentationFramework, PresentationCore, WindowsBase
+          $dict = [Windows.Markup.XamlReader]::Load([IO.File]::OpenRead("src/Trilha/Logo.xaml"))
+          $img = $dict["NiderLogo"]
+          $sizes = 256, 48, 32, 16
+          $w = ($sizes | Measure-Object -Sum).Sum + 60
+          $dv = New-Object Windows.Media.DrawingVisual
+          $dc = $dv.RenderOpen()
+          $dc.DrawRectangle([Windows.Media.Brushes]::DimGray, $null, (New-Object Windows.Rect 0, 0, $w, 276))
+          $x = 10
+          foreach ($s in $sizes) { $dc.DrawImage($img, (New-Object Windows.Rect $x, 10, $s, $s)); $x += $s + 10 }
+          $dc.Close()
+          $bmp = New-Object Windows.Media.Imaging.RenderTargetBitmap $w, 276, 96, 96, ([Windows.Media.PixelFormats]::Pbgra32)
+          $bmp.Render($dv)
+          $enc = New-Object Windows.Media.Imaging.PngBitmapEncoder
+          $enc.Frames.Add([Windows.Media.Imaging.BitmapFrame]::Create($bmp))
+          $fs = [IO.File]::Create("logo-preview.png"); $enc.Save($fs); $fs.Close()
+      - uses: actions/upload-artifact@v4
+        with:
+          name: logo-preview
+          path: logo-preview.png
       - uses: actions/upload-artifact@v4
         with:
           name: NiderEtapas-Windows

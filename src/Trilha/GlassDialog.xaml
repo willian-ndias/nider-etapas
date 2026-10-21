@@ -21,7 +21,7 @@
                     <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition/>
                 </Grid.ColumnDefinitions>
-                <Image Source="pack://application:,,,/logo.png" Width="48" Height="48" VerticalAlignment="Top" RenderOptions.BitmapScalingMode="HighQuality"/>
+                <Image Source="{StaticResource NiderLogo}" Width="48" Height="48" VerticalAlignment="Top" RenderOptions.BitmapScalingMode="HighQuality"/>
                 <StackPanel Grid.Column="1" Margin="16,0,0,0">
                     <TextBlock x:Name="TitleText" Style="{StaticResource Title}" FontSize="18" TextWrapping="Wrap"/>
                     <TextBlock x:Name="MessageText" Style="{StaticResource Body}" Margin="0,6,0,0"/>

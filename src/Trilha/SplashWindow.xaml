@@ -31,7 +31,7 @@
                             <DropShadowEffect Color="#FFFF3B4E" BlurRadius="12" ShadowDepth="0" Opacity="0.8"/>
                         </Path.Effect>
                     </Path>
-                    <Image Source="pack://application:,,,/logo.png" Width="104" Height="104" RenderOptions.BitmapScalingMode="HighQuality"/>
+                    <Image Source="{StaticResource NiderLogo}" Width="104" Height="104" RenderOptions.BitmapScalingMode="HighQuality"/>
                 </Grid>
                 <TextBlock Text="Nider Etapas" Style="{StaticResource Title}" FontSize="30" HorizontalAlignment="Center" Margin="0,22,0,0"/>
                 <TextBlock x:Name="ByText" Foreground="{StaticResource TextSecondary}" FontSize="14" HorizontalAlignment="Center" Margin="0,4,0,0"/>

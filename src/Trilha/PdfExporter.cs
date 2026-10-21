@@ -55,9 +55,9 @@ public static class PdfExporter
                             c.Item().PaddingTop(2).Text($"Criado em {created:dd/MM/yyyy 'às' HH:mm}  ·  {steps.Count(x => !x.IsText)} {(steps.Count(x => !x.IsText) == 1 ? "passo" : "passos")}")
                                 .FontSize(9.5f).FontColor("#6B7083");
                         });
-                        var logo = LogoBytes();
+                        var logo = LogoSvg();
                         if (logo != null)
-                            row.AutoItem().AlignTop().Width(22).Height(22).Image(logo).FitArea();
+                            row.AutoItem().AlignTop().Width(22).Height(22).Svg(logo);
                         row.AutoItem().AlignTop().PaddingTop(5).PaddingLeft(5).Text(AppInfo.Name).FontSize(9).FontColor("#C3C8CF");
                     });
                     col.Item().PaddingTop(8).Row(r =>
@@ -129,7 +129,8 @@ public static class PdfExporter
             });
         });
 
-        doc.WithSettings(new DocumentSettings { ImageRasterDpi = 200, ImageCompressionQuality = ImageCompressionQuality.High })
+        // Prints de tela têm texto e bordas finas: 300 dpi e compressão máxima, senão serrilha.
+        doc.WithSettings(new DocumentSettings { ImageRasterDpi = 300, ImageCompressionQuality = ImageCompressionQuality.Best })
            .WithMetadata(new DocumentMetadata { Title = title, Creator = $"{AppInfo.Name} · {AppInfo.Site}", Producer = $"{AppInfo.Name} · {AppInfo.Site}" })
            .GeneratePdf(path);
     }
@@ -138,13 +139,22 @@ public static class PdfExporter
     static IEnumerable<string> Paragraphs(string text) =>
         (text ?? "").Replace("\r\n", "\n").Split('\n').Select(p => p.Trim()).Where(p => p.Length > 0);
 
-    static (float w, float h) FitImage(byte[] jpeg, float maxW, float maxH)
+    static (float w, float h) FitImage(byte[] image, float maxW, float maxH)
     {
-        var (pw, ph) = JpegSize(jpeg);
+        var (pw, ph) = PngSize(image);
+        if (pw <= 0 || ph <= 0) (pw, ph) = JpegSize(image);
         if (pw <= 0 || ph <= 0) return (maxW, maxW * 9 / 16);
         var ratio = (float)pw / ph;
         var w = Math.Min(maxW, maxH * ratio);
         return (w, w / ratio);
+    }
+
+    /// <summary>Lê largura e altura do cabeçalho IHDR do PNG.</summary>
+    static (int w, int h) PngSize(byte[] d)
+    {
+        if (d.Length < 24 || d[0] != 0x89 || d[1] != 0x50 || d[2] != 0x4E || d[3] != 0x47) return (0, 0);
+        int Be(int i) => (d[i] << 24) | (d[i + 1] << 16) | (d[i + 2] << 8) | d[i + 3];
+        return (Be(16), Be(20));
     }
 
     /// <summary>Lê largura e altura direto do cabeçalho do JPEG.</summary>
@@ -164,17 +174,17 @@ public static class PdfExporter
         return (0, 0);
     }
 
-    static byte[]? _logo;
-    static byte[]? LogoBytes()
+    static string? _logo;
+    /// <summary>Logo em vetor (SVG): nítida em qualquer zoom do PDF.</summary>
+    static string? LogoSvg()
     {
         if (_logo != null) return _logo;
         try
         {
-            using var st = typeof(PdfExporter).Assembly.GetManifestResourceStream("logo-faint.png");
+            using var st = typeof(PdfExporter).Assembly.GetManifestResourceStream("logo.svg");
             if (st == null) return null;
-            using var ms = new System.IO.MemoryStream();
-            st.CopyTo(ms);
-            return _logo = ms.ToArray();
+            using var rd = new StreamReader(st);
+            return _logo = rd.ReadToEnd();
         }
         catch { return null; }
     }

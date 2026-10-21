@@ -36,8 +36,8 @@
   <ItemGroup>
     <EmbeddedResource Include="Fonts\*.ttf" />
     <Resource Include="nider.ico" />
-    <Resource Include="logo.png" />
-    <EmbeddedResource Include="logo.png" LogicalName="logo.png" /><EmbeddedResource Include="logo-faint.png" LogicalName="logo-faint.png"/>
+    <!-- Logo em vetor: Logo.xaml (telas) e logo.svg (PDF). Nunca PNG reduzido: serrilha. -->
+    <EmbeddedResource Include="logo.svg" LogicalName="logo.svg" />
   </ItemGroup>
 
 </Project>

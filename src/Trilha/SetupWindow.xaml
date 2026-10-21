@@ -36,7 +36,7 @@
 
             <StackPanel Margin="44,40,44,36">
                 <!-- marca -->
-                <Image Source="pack://application:,,,/logo.png" Width="96" Height="96" HorizontalAlignment="Left" RenderOptions.BitmapScalingMode="HighQuality"/>
+                <Image Source="{StaticResource NiderLogo}" Width="96" Height="96" HorizontalAlignment="Left" RenderOptions.BitmapScalingMode="HighQuality"/>
                 <StackPanel Orientation="Horizontal" Margin="0,22,0,0">
                     <TextBlock x:Name="NameText" Text="Nider Etapas" Style="{StaticResource Title}" FontSize="34"/>
                     <Border x:Name="VersionChip" CornerRadius="9" Background="#1FFFFFFF" BorderBrush="#26FFFFFF" BorderThickness="1"
