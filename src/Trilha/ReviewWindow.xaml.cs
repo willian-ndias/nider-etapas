@@ -184,6 +184,8 @@ public partial class ReviewWindow : Window
 
     void Draw_Click(object sender, RoutedEventArgs e) => EditDrawing();
 
+    void About_Click(object sender, RoutedEventArgs e) => About.Show(this);
+
     /// <summary>Troca o formato/cor do destaque do clique: só neste passo ou em todos (e nas próximas gravações).</summary>
     void Marker_Click(object sender, RoutedEventArgs e)
     {

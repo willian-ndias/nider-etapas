@@ -11,7 +11,7 @@ public static class AppInfo
     /// <summary>Nome sem espaço: arquivo .exe, processo, registro.</summary>
     public const string Id = "NiderEtapas";
     public const string Tagline = "Manuais passo a passo, direto da sua tela";
-    public const string Publisher = "Nider";
+    public const string Publisher = "Nider Company";
     public const string Author = "Willian Dias";
     public const string Email = "nider@nider.com.br";
     public const string Site = "nider.com.br";

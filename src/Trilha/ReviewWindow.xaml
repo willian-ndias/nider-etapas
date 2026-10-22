@@ -25,6 +25,10 @@
             <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                 <Image Source="{StaticResource NiderLogo}" Width="40" Height="40" RenderOptions.BitmapScalingMode="HighQuality"/>
                 <TextBlock x:Name="AppName" Text="Nider Etapas" Style="{StaticResource Title}" FontSize="18" Margin="12,0,0,0" VerticalAlignment="Center"/>
+                <Button Style="{StaticResource IconButton}" Width="Auto" Height="34" Padding="10,0" Margin="10,0,0,0" Click="About_Click" ToolTip="Sobre o Nider Etapas"
+                        WindowChrome.IsHitTestVisibleInChrome="True">
+                    <TextBlock Text="Sobre" Foreground="{StaticResource TextPrimary}" FontSize="12.5" VerticalAlignment="Center"/>
+                </Button>
                 <Border Width="1" Height="22" Background="{StaticResource Divider}" Margin="16,0"/>
             </StackPanel>
             <!-- título do MANUAL (o nome do PDF): com rótulo e lápis, para ninguém confundir com o título de um bloco -->

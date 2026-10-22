@@ -27,6 +27,15 @@ public partial class App : Application
             return;
         }
 
+        // Chamado pelo próprio app ao achar versão nova: instala e reabre, sem o botão "Atualizar".
+        if (args.Contains("/atualizar") || args.Contains("--atualizar"))
+        {
+            var auto = new SetupWindow(SetupMode.Update, automatic: true);
+            auto.Closed += (_, _) => Shutdown();
+            auto.Show();
+            return;
+        }
+
         // Aberto fora da pasta de instalação (ex.: Downloads): mostra o painel de instalação/atualização.
         if (!AppInfo.RunningFromInstallDir && !args.Contains("--portable"))
         {

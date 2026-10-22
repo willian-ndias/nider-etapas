@@ -42,13 +42,22 @@ public static class Update
             var current = new Version(AppInfo.Version.Major, AppInfo.Version.Minor, AppInfo.Version.Build);
             if (version <= current) return null;
 
-            var page = Text("pagina", "url");
             var download = Text("download");
-            if (!Trusted(page)) page = "";
-            if (!Trusted(download)) download = "";
-            return page == "" && download == "" ? null : new Info(version, page, download, Text("notas", "notes"));
+            if (string.IsNullOrWhiteSpace(download)) download = DirectDownload();
+            if (!Trusted(download)) return null;
+            return new Info(version, "", download, Text("notas", "notes"));
         }
         catch { return null; }
+    }
+
+    /// <summary>O instalador público do mesmo site. Nunca a página /downloads, que pede login.</summary>
+    static string DirectDownload()
+    {
+        var url = AppInfo.UpdateUrl.TrimEnd('/');
+        const string tail = "/versao";
+        if (url.EndsWith(tail, StringComparison.OrdinalIgnoreCase))
+            url = url[..^tail.Length] + "/baixar";
+        return url;
     }
 
     /// <summary>Só baixa por https e do mesmo site de onde veio a consulta de versão.</summary>
@@ -65,22 +74,47 @@ public static class Update
         Directory.CreateDirectory(dir);
         var tmp = Path.Combine(dir, "download.part");
 
-        using (var http = new HttpClient { Timeout = TimeSpan.FromMinutes(15) })
-        using (var resp = await http.GetAsync(info.Download, HttpCompletionOption.ResponseHeadersRead))
+        if (string.IsNullOrWhiteSpace(info.Download))
+            throw new InvalidOperationException("Não há link direto do instalador.");
+
+        using (var handler = new HttpClientHandler { AllowAutoRedirect = false })
+        using (var http = new HttpClient(handler) { Timeout = TimeSpan.FromMinutes(15) })
         {
-            resp.EnsureSuccessStatusCode();
-            var total = resp.Content.Headers.ContentLength ?? 0;
-            await using var src = await resp.Content.ReadAsStreamAsync();
-            await using var dst = File.Create(tmp);
-            var buffer = new byte[1 << 16];
-            long done = 0;
-            int read;
-            while ((read = await src.ReadAsync(buffer)) > 0)
+            var url = info.Download;
+            HttpResponseMessage? resp = null;
+            try
             {
-                await dst.WriteAsync(buffer.AsMemory(0, read));
-                done += read;
-                if (total > 0) progress?.Report((double)done / total);
+                for (var hop = 0; hop < 5; hop++)
+                {
+                    using var req = new HttpRequestMessage(HttpMethod.Get, url);
+                    req.Headers.TryAddWithoutValidation("User-Agent", AppInfo.Id);
+                    resp = await http.SendAsync(req, HttpCompletionOption.ResponseHeadersRead);
+                    var code = (int)resp.StatusCode;
+                    if (code is < 300 or >= 400) break;
+                    var next = resp.Headers.Location ?? throw new InvalidDataException("O servidor não indicou o arquivo.");
+                    var absolute = next.IsAbsoluteUri ? next : new Uri(new Uri(url), next);
+                    if (!string.Equals(absolute.Scheme, Uri.UriSchemeHttps, StringComparison.OrdinalIgnoreCase))
+                        throw new InvalidDataException("O instalador não veio por https.");
+                    url = absolute.ToString();
+                    resp.Dispose();
+                    resp = null;
+                }
+                if (resp == null) throw new InvalidDataException("O instalador não foi encontrado.");
+                resp.EnsureSuccessStatusCode();
+                var total = resp.Content.Headers.ContentLength ?? 0;
+                await using var src = await resp.Content.ReadAsStreamAsync();
+                await using var dst = File.Create(tmp);
+                var buffer = new byte[1 << 16];
+                long done = 0;
+                int read;
+                while ((read = await src.ReadAsync(buffer)) > 0)
+                {
+                    await dst.WriteAsync(buffer.AsMemory(0, read));
+                    done += read;
+                    if (total > 0) progress?.Report((double)done / total);
+                }
             }
+            finally { resp?.Dispose(); }
         }
 
         var exe = Path.Combine(dir, $"{AppInfo.Id}-{info.Version}.exe");

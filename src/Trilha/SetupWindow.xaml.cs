@@ -11,17 +11,19 @@ public enum SetupMode { Install, Update, AlreadyInstalled, NewerInstalled, Unins
 public partial class SetupWindow : Window
 {
     readonly SetupMode _mode;
+    readonly bool _automatic;
     bool _working, _finished;
 
     /// <summary>Verdadeiro quando a pessoa escolheu "Usar sem instalar".</summary>
     public bool RunPortable { get; private set; }
 
-    public SetupWindow(SetupMode mode)
+    public SetupWindow(SetupMode mode, bool automatic = false)
     {
         InitializeComponent();
         _mode = mode;
+        _automatic = automatic;
         Shell.SizeChanged += (_, _) => Shell.Clip = new RectangleGeometry(new Rect(Shell.RenderSize), 28, 28);
-        CreditText.Text = $"{AppInfo.Name} by {AppInfo.Site}  ·  {AppInfo.Author}  ·  {AppInfo.Email}";
+        CreditText.Text = $"{AppInfo.Publisher}  ·  {AppInfo.Author}  ·  {AppInfo.Site}  ·  {AppInfo.Email}";
         SourceInitialized += (_, _) => _ = new Frost(this, Shell, FrostImage, Glass.ExcludeFromCapture(this));
         Glass.MakeDraggable(this, Shell);
 
@@ -70,10 +72,15 @@ public partial class SetupWindow : Window
                 break;
         }
 
-        Loaded += (_, _) =>
+        Loaded += async (_, _) =>
         {
             Opacity = 0;
             BeginAnimation(OpacityProperty, new DoubleAnimation(0, 1, TimeSpan.FromMilliseconds(260)));
+            if (_automatic)
+            {
+                LaunchSwitch.IsChecked = true;
+                await RunInstall();
+            }
         };
     }
 

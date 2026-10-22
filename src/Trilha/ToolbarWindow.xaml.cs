@@ -297,6 +297,8 @@ public partial class ToolbarWindow : Window
         catch (Exception ex) { Log.Error("Manual", ex); GlassDialog.Error(this, "Não consegui abrir o manual."); }
     }
 
+    void About_Click(object sender, RoutedEventArgs e) => About.Show(this);
+
     // ------------------------------------------------------------ atualização
 
     async void CheckForUpdates()
@@ -304,8 +306,8 @@ public partial class ToolbarWindow : Window
         _update = await Update.CheckAsync();
         if (_update == null) return;
         UpdateButton.Visibility = Visibility.Visible;
-        UpdateButton.ToolTip = $"Nova versão {_update.Version} disponível. Clique para atualizar.";
-        // Pergunta logo ao abrir, mas nunca no meio de uma gravação.
+        UpdateButton.ToolTip = $"Nova versão {_update.Version}. Clique para baixar e instalar.";
+        // Ao abrir, já oferece. No meio de uma gravação só deixa o ícone, para não perder o trabalho.
         if (!IsRecordingOrBusy()) await OfferUpdateAsync();
     }
 
@@ -325,26 +327,20 @@ public partial class ToolbarWindow : Window
                 "Termine a gravação e salve o PDF antes de atualizar. Depois é só clicar de novo no ícone de download.", "OK");
             return;
         }
-        var notes = string.IsNullOrWhiteSpace(_update.Notes) ? "" : "\n\nNovidades:\n" + _update.Notes;
-        var r = GlassDialog.Show(this, $"Nova versão {_update.Version} disponível",
-            $"Você está na versão {AppInfo.VersionText}. Quer atualizar agora? O {AppInfo.Name} baixa a versão nova e reabre sozinho." + notes,
-            "Atualizar agora", "Depois");
-        if (r != 0) return;
-
-        if (string.IsNullOrEmpty(_update.Download)) { OpenUpdatePage(); return; }
-
         _updating = true;
         UpdateButton.IsEnabled = false;
         var tip = UpdateButton.ToolTip;
         try
         {
+            StatusText.Text = "Baixando a atualização...";
             var progress = new Progress<double>(p => UpdateButton.ToolTip = $"Baixando a versão {_update.Version}... {p:P0}");
             UpdateButton.ToolTip = $"Baixando a versão {_update.Version}...";
             var exe = await Update.DownloadAsync(_update, progress);
-            // O instalador novo abre o painel "Atualizar", fecha esta versão e troca o programa.
+            // /atualizar instala e reabre sozinho. Não abre o site (a página de downloads pede login).
             System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(exe)
             {
                 UseShellExecute = true,
+                Arguments = "/atualizar",
                 WorkingDirectory = System.IO.Path.GetDirectoryName(exe)!,
             });
             Application.Current.Shutdown();
@@ -355,19 +351,9 @@ public partial class ToolbarWindow : Window
             _updating = false;
             UpdateButton.IsEnabled = true;
             UpdateButton.ToolTip = tip;
-            var again = GlassDialog.Show(this, "Não deu para baixar a atualização",
-                "Verifique a internet e tente de novo pelo ícone de download na barrinha.", "Abrir página de downloads", "Fechar");
-            if (again == 0) OpenUpdatePage();
+            StatusText.Text = "Pronto para gravar";
+            GlassDialog.Show(this, "Não deu para baixar a atualização",
+                "Verifique a internet e clique de novo na seta da barrinha. O programa baixa e instala sozinho, sem abrir o site.", "OK");
         }
-    }
-
-    void OpenUpdatePage()
-    {
-        if (_update == null || string.IsNullOrEmpty(_update.Page)) return;
-        try
-        {
-            System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(_update.Page) { UseShellExecute = true });
-        }
-        catch (Exception ex) { Log.Error("Update", ex); GlassDialog.Error(this, "Não consegui abrir a página de downloads."); }
     }
 }
