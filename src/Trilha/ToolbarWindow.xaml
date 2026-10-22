@@ -49,11 +49,11 @@
                 <Button Style="{StaticResource IconButton}" Click="Manual_Click" ToolTip="Manual do Nider Etapas (PDF, sempre a versão mais nova)" Margin="2,0,0,0">
                     <Path Data="{StaticResource IcManual}" Style="{StaticResource Icon}"/>
                 </Button>
-                <Button Style="{StaticResource IconButton}" Click="About_Click" ToolTip="Sobre o Nider Etapas" Margin="2,0,0,0">
-                    <Path Data="{StaticResource IcInfo}" Style="{StaticResource Icon}"/>
-                </Button>
                 <Button x:Name="StopButton" Style="{StaticResource IconButton}" Click="Stop_Click" ToolTip="Parar e revisar o manual" Margin="2,0,0,0">
                     <Path Data="{StaticResource IcStop}" Style="{StaticResource Icon}" Fill="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}"/>
+                </Button>
+                <Button Style="{StaticResource IconButton}" Click="About_Click" ToolTip="Sobre o Nider Etapas" Margin="2,0,0,0">
+                    <Path Data="{StaticResource IcInfo}" Style="{StaticResource Icon}"/>
                 </Button>
 
                 <Border Width="1" Height="26" Background="{StaticResource Divider}" Margin="6,0,4,0"/>
