@@ -298,13 +298,19 @@ public partial class ToolbarWindow : Window
         catch (Exception ex) { Log.Error("Manual", ex); GlassDialog.Error(this, "Não consegui abrir o manual."); }
     }
 
-    void About_Click(object sender, RoutedEventArgs e) => About.Show(this);
+    void Info_Click(object sender, RoutedEventArgs e)
+    {
+        if (_updating) return;
+        if (_update != null) AskUpdate();
+        else About.Show(this);
+    }
 
     // ------------------------------------------------------------ atualização
 
     DispatcherTimer? _updateWatch;
+    bool _updateShown;
 
-    /// <summary>Com o programa aberto, olha de novo a cada 45 s. Achou versão nova: só mostra a seta.</summary>
+    /// <summary>Com o programa aberto, olha de novo a cada 45 s. Versão nova troca o ícone de informação. Não baixa.</summary>
     void ArmUpdateWatch()
     {
         _updateWatch = new DispatcherTimer { Interval = TimeSpan.FromSeconds(45) };
@@ -318,24 +324,21 @@ public partial class ToolbarWindow : Window
         if (_updating) return;
         var found = await Update.CheckAsync();
         if (found == null || _updating) return;
-        if (_update != null && found.Version == _update.Version && UpdateButton.Visibility == Visibility.Visible) return;
+        if (_updateShown && _update != null && found.Version == _update.Version) return;
         _update = found;
         ShowUpdateReady();
     }
 
-    void Update_Click(object sender, RoutedEventArgs e)
-    {
-        if (_updating) return;
-        AskUpdate();
-    }
-
     void ShowUpdateReady()
     {
-        UpdateButton.Visibility = Visibility.Visible;
+        _updateShown = true;
+        UpdateArrowShift.BeginAnimation(TranslateTransform.YProperty, null);
+        UpdateArrowShift.Y = 0;
+        InfoIcon.Data = (System.Windows.Media.Geometry)FindResource("IcDownload");
+        InfoIcon.Opacity = 1;
         UpdatePercent.Visibility = Visibility.Collapsed;
         UpdatePercent.Text = "";
-        UpdateArrow.Opacity = 1;
-        UpdateButton.ToolTip = $"Nova versão {_update!.Version}. Clique para ver e decidir.";
+        InfoButton.ToolTip = $"Nova versão {_update!.Version}. Clique para atualizar.";
     }
 
     void AskUpdate()
@@ -344,7 +347,7 @@ public partial class ToolbarWindow : Window
         if (IsRecordingOrBusy())
         {
             GlassDialog.Show(this, $"Nova versão {_update.Version}",
-                "Termine a gravação e salve o PDF antes de atualizar. Depois é só clicar de novo na seta.", "OK");
+                "Termine a gravação e salve o PDF antes de atualizar. Depois é só clicar de novo no ícone de atualização.", "OK");
             return;
         }
         var notes = string.IsNullOrWhiteSpace(_update.Notes) ? "" : "\n\n" + _update.Notes.Trim();
@@ -353,11 +356,10 @@ public partial class ToolbarWindow : Window
         if (choice == 0) _ = OfferUpdateAsync();
     }
 
-    /// <summary>A seta desce e volta, acesa, com a porcentagem ao lado.</summary>
+    /// <summary>Só depois do Baixar: o ícone desce e a porcentagem aparece.</summary>
     void StartUpdateArrow()
     {
-        UpdateButton.Visibility = Visibility.Visible;
-        UpdateArrow.Opacity = 1;
+        InfoIcon.Opacity = 1;
         UpdatePercent.Visibility = Visibility.Visible;
         UpdatePercent.Text = "0%";
         var move = new DoubleAnimation(-4, 5, TimeSpan.FromMilliseconds(700))
@@ -375,16 +377,17 @@ public partial class ToolbarWindow : Window
         UpdatePercent.Text = pct;
         UpdatePercent.Visibility = Visibility.Visible;
         StatusText.Text = $"Baixando {pct}";
-        UpdateButton.ToolTip = $"Baixando a versão {_update!.Version} · {pct}";
+        InfoButton.ToolTip = $"Baixando a versão {_update!.Version} · {pct}";
     }
 
     void StopUpdateArrow()
     {
         UpdateArrowShift.BeginAnimation(TranslateTransform.YProperty, null);
         UpdateArrowShift.Y = 0;
-        UpdateArrow.Opacity = 1;
+        InfoIcon.Opacity = 1;
         UpdatePercent.Visibility = Visibility.Collapsed;
         UpdatePercent.Text = "";
+        if (_update != null) ShowUpdateReady();
     }
 
     bool _updating;
@@ -402,7 +405,7 @@ public partial class ToolbarWindow : Window
             return;
         }
         _updating = true;
-        var tip = UpdateButton.ToolTip;
+        var tip = InfoButton.ToolTip;
         StartUpdateArrow();
         ShowDownloadStatus(0);
         try
@@ -423,10 +426,10 @@ public partial class ToolbarWindow : Window
             Log.Error("Update", ex);
             _updating = false;
             StopUpdateArrow();
-            UpdateButton.ToolTip = tip;
+            InfoButton.ToolTip = tip;
             StatusText.Text = "Pronto para gravar";
             GlassDialog.Show(this, "Não deu para baixar a atualização",
-                "Verifique a internet e clique de novo na seta da barrinha. O programa baixa e instala sozinho, sem abrir o site.", "OK");
+                "Verifique a internet e clique de novo no ícone de atualização.", "OK");
         }
     }
 }
