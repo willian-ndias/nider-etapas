@@ -335,14 +335,14 @@ public partial class ToolbarWindow : Window
         UpdateArrowShift.BeginAnimation(TranslateTransform.YProperty, null);
         UpdateArrowShift.Y = 0;
         InfoIcon.Data = (System.Windows.Media.Geometry)FindResource("IcUpdate");
-        InfoIcon.Width = 22;
-        InfoIcon.Height = 22;
+        InfoIcon.Width = 20;
+        InfoIcon.Height = 20;
         InfoIcon.Opacity = 1;
         UpdateLabel.Visibility = Visibility.Visible;
         UpdatePercent.Visibility = Visibility.Collapsed;
         UpdatePercent.Text = "";
-        InfoButton.Background = (System.Windows.Media.Brush)FindResource("TextPrimary");
-        InfoButton.Foreground = (System.Windows.Media.Brush)FindResource("OnAccent");
+        InfoButton.ClearValue(BackgroundProperty);
+        InfoButton.ClearValue(ForegroundProperty);
         InfoButton.ToolTip = $"Nova versão {_update!.Version}. Clique para atualizar.";
     }
 
@@ -365,11 +365,14 @@ public partial class ToolbarWindow : Window
     void StartUpdateArrow()
     {
         InfoIcon.Data = (System.Windows.Media.Geometry)FindResource("IcDownload");
+        InfoIcon.Width = 20;
+        InfoIcon.Height = 20;
         InfoIcon.Opacity = 1;
         UpdateLabel.Visibility = Visibility.Collapsed;
         UpdatePercent.Visibility = Visibility.Visible;
-        UpdatePercent.Foreground = (System.Windows.Media.Brush)FindResource("OnAccent");
         UpdatePercent.Text = "0%";
+        InfoButton.ClearValue(BackgroundProperty);
+        InfoButton.ClearValue(ForegroundProperty);
         var move = new DoubleAnimation(-4, 5, TimeSpan.FromMilliseconds(700))
         {
             AutoReverse = true,
