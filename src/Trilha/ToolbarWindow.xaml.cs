@@ -306,9 +306,6 @@ public partial class ToolbarWindow : Window
         _update = await Update.CheckAsync();
         if (_update == null) return;
         ShowUpdateReady();
-        // Ao abrir, o alerta pergunta. Baixar começa o processo; Depois deixa a seta na barrinha.
-        // No meio de uma gravação só deixa a seta, para não perder o trabalho.
-        if (!IsRecordingOrBusy()) AskUpdate();
     }
 
     void Update_Click(object sender, RoutedEventArgs e)
@@ -323,7 +320,7 @@ public partial class ToolbarWindow : Window
         UpdatePercent.Visibility = Visibility.Collapsed;
         UpdatePercent.Text = "";
         UpdateArrow.Opacity = 1;
-        UpdateButton.ToolTip = $"Nova versão {_update!.Version}. Clique para baixar.";
+        UpdateButton.ToolTip = $"Nova versão {_update!.Version}. Clique para ver e decidir.";
     }
 
     void AskUpdate()
