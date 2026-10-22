@@ -305,37 +305,74 @@ public partial class ToolbarWindow : Window
     {
         _update = await Update.CheckAsync();
         if (_update == null) return;
-        UpdateButton.Visibility = Visibility.Visible;
-        UpdateButton.ToolTip = $"Nova versão {_update.Version}. Clique para baixar e instalar.";
-        // Ao abrir, já oferece. No meio de uma gravação só deixa o ícone, para não perder o trabalho.
-        if (!IsRecordingOrBusy()) await OfferUpdateAsync();
+        ShowUpdateReady();
+        // Ao abrir, o alerta pergunta. Baixar começa o processo; Depois deixa a seta na barrinha.
+        // No meio de uma gravação só deixa a seta, para não perder o trabalho.
+        if (!IsRecordingOrBusy()) AskUpdate();
     }
 
-    async void Update_Click(object sender, RoutedEventArgs e) => await OfferUpdateAsync();
+    void Update_Click(object sender, RoutedEventArgs e)
+    {
+        if (_updating) return;
+        AskUpdate();
+    }
 
-    /// <summary>A seta desce e some, em ciclo, enquanto o instalador baixa.</summary>
+    void ShowUpdateReady()
+    {
+        UpdateButton.Visibility = Visibility.Visible;
+        UpdatePercent.Visibility = Visibility.Collapsed;
+        UpdatePercent.Text = "";
+        UpdateArrow.Opacity = 1;
+        UpdateButton.ToolTip = $"Nova versão {_update!.Version}. Clique para baixar.";
+    }
+
+    void AskUpdate()
+    {
+        if (_update == null || _updating) return;
+        if (IsRecordingOrBusy())
+        {
+            GlassDialog.Show(this, $"Nova versão {_update.Version}",
+                "Termine a gravação e salve o PDF antes de atualizar. Depois é só clicar de novo na seta.", "OK");
+            return;
+        }
+        var notes = string.IsNullOrWhiteSpace(_update.Notes) ? "" : "\n\n" + _update.Notes.Trim();
+        var choice = GlassDialog.Show(this, $"Nova versão {_update.Version}",
+            $"Há uma atualização do Nider Etapas.{notes}", "Baixar", "Depois");
+        if (choice == 0) _ = OfferUpdateAsync();
+    }
+
+    /// <summary>A seta desce e volta, acesa, com a porcentagem ao lado.</summary>
     void StartUpdateArrow()
     {
         UpdateButton.Visibility = Visibility.Visible;
-        var move = new DoubleAnimation(-6, 8, TimeSpan.FromMilliseconds(650))
+        UpdateArrow.Opacity = 1;
+        UpdatePercent.Visibility = Visibility.Visible;
+        UpdatePercent.Text = "0%";
+        var move = new DoubleAnimation(-4, 5, TimeSpan.FromMilliseconds(700))
         {
+            AutoReverse = true,
             RepeatBehavior = RepeatBehavior.Forever,
-            EasingFunction = new QuadraticEase { EasingMode = EasingMode.EaseIn },
-        };
-        var fade = new DoubleAnimation(1, 0.15, TimeSpan.FromMilliseconds(650))
-        {
-            RepeatBehavior = RepeatBehavior.Forever,
+            EasingFunction = new QuadraticEase { EasingMode = EasingMode.EaseInOut },
         };
         UpdateArrowShift.BeginAnimation(TranslateTransform.YProperty, move);
-        UpdateArrow.BeginAnimation(OpacityProperty, fade);
+    }
+
+    void ShowDownloadStatus(double p)
+    {
+        var pct = $"{Math.Clamp(p, 0, 1):P0}";
+        UpdatePercent.Text = pct;
+        UpdatePercent.Visibility = Visibility.Visible;
+        StatusText.Text = $"Baixando {pct}";
+        UpdateButton.ToolTip = $"Baixando a versão {_update!.Version} · {pct}";
     }
 
     void StopUpdateArrow()
     {
         UpdateArrowShift.BeginAnimation(TranslateTransform.YProperty, null);
-        UpdateArrow.BeginAnimation(OpacityProperty, null);
         UpdateArrowShift.Y = 0;
         UpdateArrow.Opacity = 1;
+        UpdatePercent.Visibility = Visibility.Collapsed;
+        UpdatePercent.Text = "";
     }
 
     bool _updating;
@@ -355,11 +392,10 @@ public partial class ToolbarWindow : Window
         _updating = true;
         var tip = UpdateButton.ToolTip;
         StartUpdateArrow();
+        ShowDownloadStatus(0);
         try
         {
-            StatusText.Text = "Baixando a atualização...";
-            var progress = new Progress<double>(p => UpdateButton.ToolTip = $"Baixando a versão {_update.Version}... {p:P0}");
-            UpdateButton.ToolTip = $"Baixando a versão {_update.Version}...";
+            var progress = new Progress<double>(ShowDownloadStatus);
             var exe = await Update.DownloadAsync(_update, progress);
             // /atualizar instala e reabre sozinho. Não abre o site (a página de downloads pede login).
             System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(exe)
