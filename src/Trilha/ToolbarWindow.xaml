@@ -59,9 +59,11 @@
                 <Border Width="1" Height="26" Background="{StaticResource Divider}" Margin="6,0,4,0"/>
 
                 <Button x:Name="UpdateButton" Style="{StaticResource IconButton}" Click="Update_Click" Visibility="Collapsed" ToolTip="Nova versão disponível">
-                    <Grid>
-                        <Path Data="{StaticResource IcDownload}" Style="{StaticResource Icon}" Stroke="{StaticResource AccentSolid}"/>
-                    </Grid>
+                    <Path x:Name="UpdateArrow" Data="{StaticResource IcDownload}" Style="{StaticResource Icon}" Stroke="{StaticResource AccentSolid}" RenderTransformOrigin="0.5,0.5">
+                        <Path.RenderTransform>
+                            <TranslateTransform x:Name="UpdateArrowShift"/>
+                        </Path.RenderTransform>
+                    </Path>
                 </Button>
                 <Button Style="{StaticResource IconButton}" Width="34" Height="34" Click="Close_Click" ToolTip="Fechar">
                     <Path Data="{StaticResource IcClose}" Style="{StaticResource Icon}" Width="15" Height="15" Stroke="{StaticResource TextSecondary}"/>

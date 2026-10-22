@@ -313,6 +313,31 @@ public partial class ToolbarWindow : Window
 
     async void Update_Click(object sender, RoutedEventArgs e) => await OfferUpdateAsync();
 
+    /// <summary>A seta desce e some, em ciclo, enquanto o instalador baixa.</summary>
+    void StartUpdateArrow()
+    {
+        UpdateButton.Visibility = Visibility.Visible;
+        var move = new DoubleAnimation(-6, 8, TimeSpan.FromMilliseconds(650))
+        {
+            RepeatBehavior = RepeatBehavior.Forever,
+            EasingFunction = new QuadraticEase { EasingMode = EasingMode.EaseIn },
+        };
+        var fade = new DoubleAnimation(1, 0.15, TimeSpan.FromMilliseconds(650))
+        {
+            RepeatBehavior = RepeatBehavior.Forever,
+        };
+        UpdateArrowShift.BeginAnimation(TranslateTransform.YProperty, move);
+        UpdateArrow.BeginAnimation(OpacityProperty, fade);
+    }
+
+    void StopUpdateArrow()
+    {
+        UpdateArrowShift.BeginAnimation(TranslateTransform.YProperty, null);
+        UpdateArrow.BeginAnimation(OpacityProperty, null);
+        UpdateArrowShift.Y = 0;
+        UpdateArrow.Opacity = 1;
+    }
+
     bool _updating;
 
     /// <summary>Gravando ou com passos ainda não salvos: atualizar agora fecharia o app e perderia o trabalho.</summary>
@@ -328,8 +353,8 @@ public partial class ToolbarWindow : Window
             return;
         }
         _updating = true;
-        UpdateButton.IsEnabled = false;
         var tip = UpdateButton.ToolTip;
+        StartUpdateArrow();
         try
         {
             StatusText.Text = "Baixando a atualização...";
@@ -349,7 +374,7 @@ public partial class ToolbarWindow : Window
         {
             Log.Error("Update", ex);
             _updating = false;
-            UpdateButton.IsEnabled = true;
+            StopUpdateArrow();
             UpdateButton.ToolTip = tip;
             StatusText.Text = "Pronto para gravar";
             GlassDialog.Show(this, "Não deu para baixar a atualização",
