@@ -310,10 +310,10 @@ public partial class ToolbarWindow : Window
     DispatcherTimer? _updateWatch;
     bool _updateShown;
 
-    /// <summary>Com o programa aberto, olha de novo a cada 45 s. Versão nova troca o ícone de informação. Não baixa.</summary>
+    /// <summary>Com o programa aberto, olha de novo a cada 4 horas. Versão nova troca o ícone de informação. Não baixa.</summary>
     void ArmUpdateWatch()
     {
-        _updateWatch = new DispatcherTimer { Interval = TimeSpan.FromSeconds(45) };
+        _updateWatch = new DispatcherTimer { Interval = TimeSpan.FromHours(4) };
         _updateWatch.Tick += (_, _) => _ = LookForUpdateAsync();
         _updateWatch.Start();
         _ = LookForUpdateAsync();
