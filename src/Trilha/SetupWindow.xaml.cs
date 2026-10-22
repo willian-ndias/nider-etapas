@@ -74,6 +74,8 @@ public partial class SetupWindow : Window
 
         Loaded += async (_, _) =>
         {
+            Topmost = true;
+            Activate();
             Opacity = 0;
             BeginAnimation(OpacityProperty, new DoubleAnimation(0, 1, TimeSpan.FromMilliseconds(260)));
             if (_automatic)

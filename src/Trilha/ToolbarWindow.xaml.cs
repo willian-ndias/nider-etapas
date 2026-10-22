@@ -334,10 +334,15 @@ public partial class ToolbarWindow : Window
         _updateShown = true;
         UpdateArrowShift.BeginAnimation(TranslateTransform.YProperty, null);
         UpdateArrowShift.Y = 0;
-        InfoIcon.Data = (System.Windows.Media.Geometry)FindResource("IcDownload");
+        InfoIcon.Data = (System.Windows.Media.Geometry)FindResource("IcUpdate");
+        InfoIcon.Width = 22;
+        InfoIcon.Height = 22;
         InfoIcon.Opacity = 1;
+        UpdateLabel.Visibility = Visibility.Visible;
         UpdatePercent.Visibility = Visibility.Collapsed;
         UpdatePercent.Text = "";
+        InfoButton.Background = (System.Windows.Media.Brush)FindResource("TextPrimary");
+        InfoButton.Foreground = (System.Windows.Media.Brush)FindResource("OnAccent");
         InfoButton.ToolTip = $"Nova versão {_update!.Version}. Clique para atualizar.";
     }
 
@@ -359,8 +364,11 @@ public partial class ToolbarWindow : Window
     /// <summary>Só depois do Baixar: o ícone desce e a porcentagem aparece.</summary>
     void StartUpdateArrow()
     {
+        InfoIcon.Data = (System.Windows.Media.Geometry)FindResource("IcDownload");
         InfoIcon.Opacity = 1;
+        UpdateLabel.Visibility = Visibility.Collapsed;
         UpdatePercent.Visibility = Visibility.Visible;
+        UpdatePercent.Foreground = (System.Windows.Media.Brush)FindResource("OnAccent");
         UpdatePercent.Text = "0%";
         var move = new DoubleAnimation(-4, 5, TimeSpan.FromMilliseconds(700))
         {
@@ -376,7 +384,6 @@ public partial class ToolbarWindow : Window
         var pct = $"{Math.Clamp(p, 0, 1):P0}";
         UpdatePercent.Text = pct;
         UpdatePercent.Visibility = Visibility.Visible;
-        StatusText.Text = $"Baixando {pct}";
         InfoButton.ToolTip = $"Baixando a versão {_update!.Version} · {pct}";
     }
 
@@ -427,7 +434,6 @@ public partial class ToolbarWindow : Window
             _updating = false;
             StopUpdateArrow();
             InfoButton.ToolTip = tip;
-            StatusText.Text = "Pronto para gravar";
             GlassDialog.Show(this, "Não deu para baixar a atualização",
                 "Verifique a internet e clique de novo no ícone de atualização.", "OK");
         }
