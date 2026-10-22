@@ -59,7 +59,7 @@ public partial class ToolbarWindow : Window
             var wa = SystemParameters.WorkArea;
             Left = wa.Left + (wa.Width - ActualWidth) / 2;
             Top = wa.Top + 6;
-            CheckForUpdates();
+            ArmUpdateWatch();
         };
         UpdateUi();
     }
@@ -273,6 +273,7 @@ public partial class ToolbarWindow : Window
             if (r == 0) { e.Cancel = true; StopRecording(); return; }
             if (r != 1) { e.Cancel = true; return; }
         }
+        _updateWatch?.Stop();
         _live?.Close();
         _recorder?.Stop();
         _recorder = null;
@@ -301,10 +302,24 @@ public partial class ToolbarWindow : Window
 
     // ------------------------------------------------------------ atualização
 
-    async void CheckForUpdates()
+    DispatcherTimer? _updateWatch;
+
+    /// <summary>Com o programa aberto, olha de novo a cada 45 s. Achou versão nova: só mostra a seta.</summary>
+    void ArmUpdateWatch()
     {
-        _update = await Update.CheckAsync();
-        if (_update == null) return;
+        _updateWatch = new DispatcherTimer { Interval = TimeSpan.FromSeconds(45) };
+        _updateWatch.Tick += (_, _) => _ = LookForUpdateAsync();
+        _updateWatch.Start();
+        _ = LookForUpdateAsync();
+    }
+
+    async Task LookForUpdateAsync()
+    {
+        if (_updating) return;
+        var found = await Update.CheckAsync();
+        if (found == null || _updating) return;
+        if (_update != null && found.Version == _update.Version && UpdateButton.Visibility == Visibility.Visible) return;
+        _update = found;
         ShowUpdateReady();
     }
 
