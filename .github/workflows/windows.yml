@@ -117,11 +117,11 @@ jobs:
             --notes-file notas.md
       # Falhou: a etiqueta sem versão sai, para o Nider Terminal não ficar mostrando "Compilando".
       - name: Tirar a etiqueta se a compilação falhou
-        if: failure() && github.event_name == 'workflow_dispatch' && github.event.inputs.versao != ''
+        if: failure() && (startsWith(github.ref, 'refs/tags/v') || (github.event_name == 'workflow_dispatch' && github.event.inputs.versao != ''))
         shell: bash
         env:
           GH_TOKEN: ${{ github.token }}
-          VERSAO: ${{ github.event.inputs.versao }}
+          VERSAO: ${{ startsWith(github.ref, 'refs/tags/v') && github.ref_name || github.event.inputs.versao }}
         run: |
           tag="v${VERSAO#v}"
           gh release view "$tag" >/dev/null 2>&1 || git push origin ":refs/tags/$tag" || true
